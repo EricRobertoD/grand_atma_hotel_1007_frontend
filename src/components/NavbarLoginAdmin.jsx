@@ -1,4 +1,4 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Badge, Avatar } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react";
 import assets from "../assets";
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
@@ -27,6 +27,9 @@ export default function NavbarLoginAdmin() {
   const dashboard = () => {
     navigate('/DashboardPageAdmin')
   }
+  const kamar = () => {
+    navigate('/KamarPageAdmin')
+  }
 
   return (
     <Navbar className="bg-slate-800">
@@ -35,10 +38,10 @@ export default function NavbarLoginAdmin() {
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         {/* {(id_role == 1 || id_role == 2 )? ( */}
-        {(id_role == 1 )? (
+        {(id_role == 4 )? (
           <NavbarItem isActive>
-            <Link onClick={dashboard} style={{ cursor: "pointer" }}>
-              Reservasi
+            <Link onClick={kamar} style={{ cursor: "pointer" }}>
+              Kamar
             </Link>
           </NavbarItem>
         ) : null}

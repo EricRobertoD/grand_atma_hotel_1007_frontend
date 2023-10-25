@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Pagination } from 'swiper/modules';
-import { Card, CardHeader } from '@nextui-org/react';
+import { Card, CardHeader, CardBody } from '@nextui-org/react';
 import { useEffect } from "react";
 
 import 'swiper/css';
@@ -42,7 +42,7 @@ export default function JenisKamarSlider() {
 
   return (
     <>
-    <div className="h-96">
+    <div className="h-96 jenis-kamar-slider-container">
       <Swiper
         effect={'coverflow'}
         grabCursor={true}
@@ -62,10 +62,16 @@ export default function JenisKamarSlider() {
         
         {jenisKamar.map((row, i) => (
         <SwiperSlide key={i}>
-          <img src={"./jeniskamar"+(i+1)+".jpeg"} />
+          <img src={"./jeniskamar"+(i+1)+".jpg"} />
             <Card>
                 <CardHeader>{row.jenis_kamar}</CardHeader>
                 
+      <CardBody>
+        {row.jenis_bed}
+      </CardBody>
+      <CardBody>
+        {row.fasilitas_kamar}
+      </CardBody>
             </Card>
         </SwiperSlide>
           ))}

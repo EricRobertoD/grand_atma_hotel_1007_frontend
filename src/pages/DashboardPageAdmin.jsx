@@ -1,4 +1,5 @@
 
+import CustomFooter from "../components/Footer";
 import ImageSlider from "../components/ImageSlider";
 import NavbarLoginAdmin from "../components/NavbarLoginAdmin";
 
@@ -7,6 +8,7 @@ function DashboardPageAdmin() {
     <div>
       <NavbarLoginAdmin />
       <ImageSlider/>
+      <CustomFooter/>
     </div>
   );
 }

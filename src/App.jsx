@@ -8,6 +8,7 @@ import DashboardPageAdmin from "./pages/DashboardPageAdmin"
 import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import ProfilePage from "./pages/ProfilePage"
+import KamarPageAdmin from "./pages/KamarPageAdmin"
 
 function App() {
   return <>
@@ -21,6 +22,7 @@ function App() {
         <Route path="/ProfilePage" element={<ProfilePage/>}/>
         <Route path="/LoginPageAdmin" element={<LoginPageAdmin/>}/>
         <Route path="/DashboardPageAdmin" element={<DashboardPageAdmin/>}/>
+        <Route path="/KamarPageAdmin" element={<KamarPageAdmin/>}/>
       </Routes>
     </BrowserRouter>
     </>

@@ -8,3 +8,8 @@
     display: block;
     width: 100%;
   }
+
+  .jenis-kamar-slider-container {
+    height: 350px; /* Adjust the height as needed */
+    margin-bottom: 350px; /* Margin for the footer */
+  }

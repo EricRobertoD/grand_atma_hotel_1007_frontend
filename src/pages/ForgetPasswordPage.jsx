@@ -2,13 +2,13 @@ import { useState } from "react";
 import NavbarPage from "../components/Navbar";
 import CustomFooter from "../components/Footer";
 import Swal from 'sweetalert2';
-import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
-const LoginPage = () => {
+const ForgetPasswordPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [jawabansq, setJawabansq] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,9 +20,10 @@ const LoginPage = () => {
     const loginData = {
       email: email,
       password: password,
+      jawaban_sq: jawabansq,
     };
 
-    fetch('http://127.0.0.1:8000/api/login', {
+    fetch('http://127.0.0.1:8000/api/forgetPassword', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -31,27 +32,37 @@ const LoginPage = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.message === 'Authenticated') {
-          console.log('Login berhasil');
-          localStorage.setItem('authToken', data.data.access_token);
-          navigate('/DashboardPage')
-        } else {
+        if (data.status === 'success') {
           Swal.fire({
-            icon: 'error',
-            title: 'Login Gagal',
-            text: 'Invalid email or password',
+              icon: 'success',
+              title: 'Changed Password Successful',
+              text: 'You have Changed Password Successful',
           });
-        }
-      })
-      .catch((error) => {
+          console.log('Change forget password successful');
+      } else {
+          console.log('Changed Password Tambahan failed');
+
+          if (data.errors) {
+              const errorMessages = Object.values(data.errors).join('\n');
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Changed Password Failed',
+                  text: errorMessages,
+              });
+          } else {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Changed Password Failed',
+                  text: 'Please check the Input details.',
+              });
+          }
+      }
+    })
+    .catch((error) => {
+        Swal.close();
         console.error('Error:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Login Gagal',
-          text: 'An error occurred. Please try again.',
-        });
-      });
-  };
+    });
+};
 
   return (
     <>
@@ -70,7 +81,7 @@ const LoginPage = () => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="password" className="block text-gray-600">Password</label>
+            <label htmlFor="password" className="block text-gray-600">New Password</label>
             <input
               type="password"
               id="password"
@@ -78,7 +89,16 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <Link to="/ForgetPasswordPage" className="inline-block pt-2" style={{color:"blue"}}>Forget password?</Link>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="jawabansq" className="block text-gray-600">Apa nama hewan peliharaan pertamamu?</label>
+              <input
+                type="text"
+                id="jawabansq"
+                className="w-full px-3 py-2 border rounded-md"
+                value={jawabansq}
+                onChange={(e) => setJawabansq(e.target.value)}
+              />
           </div>
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
@@ -93,4 +113,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default ForgetPasswordPage;

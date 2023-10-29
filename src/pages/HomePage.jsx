@@ -1,6 +1,6 @@
 import NavbarPage from "../components/Navbar";
 import ImageSlider from "../components/ImageSlider";
-import JenisKamarSlider from "../components/jenisKamarSlider";
+import JenisKamarSlider from "../components/JenisKamarSlider";
 import FooterHome from "../components/FooterHome";
 
 function HomePage() {

@@ -62,7 +62,7 @@ export default function JenisKamarSlider() {
         
         {jenisKamar.map((row, i) => (
         <SwiperSlide key={i}>
-          <img src={"./jeniskamar"+(i+1)+".jpg"} />
+          <img src={"http://127.0.0.1:8000/" +row.gambar} />
             <Card>
                 <CardHeader>{row.jenis_kamar}</CardHeader>
                 

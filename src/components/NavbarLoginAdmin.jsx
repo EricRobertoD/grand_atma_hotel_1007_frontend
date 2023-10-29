@@ -8,6 +8,7 @@ export default function NavbarLoginAdmin() {
   const logoStyle = {
     width: "200px",
     height: "auto",
+    cursor: "pointer"
   };
 
   const navigate = useNavigate();
@@ -30,11 +31,23 @@ export default function NavbarLoginAdmin() {
   const kamar = () => {
     navigate('/KamarPageAdmin')
   }
+  const musim = () => {
+    navigate('/MusimPageAdmin')
+  }
+  const fasilitas = () => {
+    navigate('/FasilitasTambahanPageAdmin')
+  }
+  const tarif = () => {
+    navigate('/TarifPageAdmin')
+  }
+  const customer = () => {
+    navigate('/CustomerGrupPageAdmin')
+  }
 
   return (
     <Navbar className="bg-slate-800">
       <NavbarBrand>
-        <img src={assets.GAHLOGO} alt="Logo" style={logoStyle} />
+        <img src={assets.GAHLOGO} alt="Logo" style={logoStyle} onClick={dashboard}/>
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         {/* {(id_role == 1 || id_role == 2 )? ( */}
@@ -45,10 +58,31 @@ export default function NavbarLoginAdmin() {
             </Link>
           </NavbarItem>
         ) : null}
-        {(id_role == 2 )? (
+        {(id_role == 5 )? (
           <NavbarItem isActive>
-            <Link onClick={dashboard} style={{ cursor: "pointer" }}>
-              Reservasi2
+            <Link onClick={fasilitas} style={{ cursor: "pointer" }}>
+              Fasilitas Tambahan
+            </Link>
+          </NavbarItem>
+        ) : null}
+        {(id_role == 5 )? (
+          <NavbarItem isActive>
+            <Link onClick={musim} style={{ cursor: "pointer" }}>
+              Musim
+            </Link>
+          </NavbarItem>
+        ) : null}
+        {(id_role == 5 )? (
+          <NavbarItem isActive>
+            <Link onClick={tarif} style={{ cursor: "pointer" }}>
+              Tarif
+            </Link>
+          </NavbarItem>
+        ) : null}
+        {(id_role == 5 )? (
+          <NavbarItem isActive>
+            <Link onClick={customer} style={{ cursor: "pointer" }}>
+              Customer
             </Link>
           </NavbarItem>
         ) : null}

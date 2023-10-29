@@ -12,9 +12,9 @@ const RegisterPage = () => {
   const [nama, setNama] = useState('');
   const [address, setAddress] = useState('');
   const [namaInst, setNamaInst] = useState('');
+  const [jawabansq, setjawabansq] = useState('');
 
   const handleRegister = () => {
-    // Show loading spinner
     Swal.showLoading();
   
     const registerData = {
@@ -26,6 +26,7 @@ const RegisterPage = () => {
         nama: nama,
         alamat: address,
         nama_institusi: namaInst,
+        jawaban_sq: jawabansq,
     };
   
     fetch('http://127.0.0.1:8000/api/register', {
@@ -46,7 +47,6 @@ const RegisterPage = () => {
               text: 'You have successfully registered.',
             });    
           console.log('Registration successful');
-          // Clear input fields upon successful registration
           setUsername('');
           setEmail('');
           setPassword('');
@@ -55,6 +55,7 @@ const RegisterPage = () => {
           setNama('');
           setAddress('');
           setNamaInst('');
+          setjawabansq('');
         } else {
           console.log('Registration failed');
   
@@ -75,7 +76,6 @@ const RegisterPage = () => {
         }
       })
       .catch((error) => {
-        // Hide loading spinner on error
         Swal.close();
         console.error('Error:', error);
       });
@@ -182,6 +182,18 @@ const RegisterPage = () => {
                 className="w-full px-3 py-2 border rounded-md"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="address" className="block text-gray-600">
+                Apa nama hewan peliharaan pertamamu?
+              </label>
+              <input
+                type="text"
+                id="jawabansq"
+                className="w-full px-3 py-2 border rounded-md"
+                value={jawabansq}
+                onChange={(e) => setjawabansq(e.target.value)}
               />
             </div>
           </div>

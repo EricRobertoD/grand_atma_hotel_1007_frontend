@@ -9,6 +9,11 @@ import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import ProfilePage from "./pages/ProfilePage"
 import KamarPageAdmin from "./pages/KamarPageAdmin"
+import MusimPageAdmin from "./pages/MusimPageAdmin"
+import TarifPageAdmin from "./pages/TarifPageAdmin"
+import FasilitasTambahanPageAdmin from "./pages/FasilitasTambahanPageAdmin"
+import ForgetPasswordPage from "./pages/ForgetPasswordPage"
+import CustomerGrupPageAdmin from "./pages/CustomerGrupPageAdmin"
 
 function App() {
   return <>
@@ -23,6 +28,11 @@ function App() {
         <Route path="/LoginPageAdmin" element={<LoginPageAdmin/>}/>
         <Route path="/DashboardPageAdmin" element={<DashboardPageAdmin/>}/>
         <Route path="/KamarPageAdmin" element={<KamarPageAdmin/>}/>
+        <Route path="/FasilitasTambahanPageAdmin" element={<FasilitasTambahanPageAdmin/>}/>
+        <Route path="/MusimPageAdmin" element={<MusimPageAdmin/>}/>
+        <Route path="/TarifPageAdmin" element={<TarifPageAdmin/>}/>
+        <Route path="/ForgetPasswordPage" element={<ForgetPasswordPage/>}/>
+        <Route path="/CustomerGrupPageAdmin" element={<CustomerGrupPageAdmin/>}/>
       </Routes>
     </BrowserRouter>
     </>

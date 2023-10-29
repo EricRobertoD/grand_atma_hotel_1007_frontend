@@ -68,7 +68,7 @@ function ProfilePage() {
         method: 'PUT',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json', // Add content type
+          'Content-Type': 'application/json', 
           Authorization: `Bearer ${authToken}`,
         },
         body: JSON.stringify(customer),
@@ -225,8 +225,8 @@ function ProfilePage() {
 
         {isEditing ? (
           <div>
-            <Button onClick={handleSave}>Save</Button>
-            <Button color="error" onClick={handleCancel}>
+            <Button color="primary" onPress={handleSave}>Save</Button>
+            <Button className="mt-10" color="danger" variant="light" onPress={handleCancel}>
               Cancel
             </Button>
           </div>

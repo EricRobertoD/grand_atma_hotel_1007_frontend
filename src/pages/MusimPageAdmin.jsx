@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Card } from "@nextui-org/react";
+import { Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Card, Select, SelectItem } from "@nextui-org/react";
 import CustomFooter from "../components/Footer";
 import NavbarLoginAdmin from "../components/NavbarLoginAdmin";
 import Swal from "sweetalert2";
@@ -11,6 +11,31 @@ export default function MusimPageAdmin() {
     const [isEditing, setIsEditing] = useState(false);
     const [musimToDelete, setMusimToDelete] = useState(null);
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+    const [isConfirmationOpenEdit, setIsConfirmationOpenEdit] = useState(false);
+    const [jenisMusimSelect, setjenisMusimSelect] = useState("");
+    const [jenisEditingMusimSelect, setEditingJenisMusimSelect] = useState("");
+
+    const jenis_musimSelect = [
+        { value: 'Promo'},
+        { value: 'High Season'},
+        ];
+
+  // Function to show the confirmation modal
+  const showConfirmation = () => {
+    setIsConfirmationOpen(true);
+  };
+  const hideConfirmation = () => {
+    setIsConfirmationOpen(false);
+  };
+
+  const showConfirmationEdit = () => {
+    setIsConfirmationOpenEdit(true);
+  };
+  const hideConfirmationEdit = () => {
+    setIsConfirmationOpenEdit(false);
+  };
+
     const calculateMinimumDate = () => {
         const today = new Date();
         today.setMonth(today.getMonth() + 2);
@@ -187,11 +212,11 @@ export default function MusimPageAdmin() {
         setMusimToDelete(null);
     };
 
-    const handleDeleteMusim = (id_musim) => {
+    const handleDeleteMusim = () => {
         Swal.showLoading();
         const authToken = localStorage.getItem("authToken");
 
-        fetch(`http://127.0.0.1:8000/api/musim/${id_musim}`, {
+        fetch(`http://127.0.0.1:8000/api/musim/${musimToDelete.id_musim}`, {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${authToken}`,
@@ -253,10 +278,11 @@ export default function MusimPageAdmin() {
                         </TableHeader>
                         <TableBody>
                             {data
-                                .filter((row) => row.jenis_musim.toLowerCase().includes(search.trim().toLowerCase()))
+                                .filter((row) => row.jenis_musim.toLowerCase().includes(search.trim().toLowerCase())
+                                    || row.nama_musim.toLowerCase().includes(search.trim().toLowerCase()))
                                 .map((row) => (
                                     <TableRow key={row.id_musim}>
-                                    <TableCell>{row.nama_musim}</TableCell>
+                                        <TableCell>{row.nama_musim}</TableCell>
                                         <TableCell>{row.jenis_musim}</TableCell>
                                         <TableCell>{formatDate(row.tanggal_mulai_musim)}</TableCell>
                                         <TableCell>{formatDate(row.tanggal_selesai_musim)}</TableCell>
@@ -265,6 +291,7 @@ export default function MusimPageAdmin() {
                                                 color="primary"
                                                 variant="flat"
                                                 onPress={() => {
+                                                    setEditingJenisMusimSelect(new Set([row.jenis_musim]))
                                                     setEditingMusim(row);
                                                     setIsEditing(true);
                                                 }}
@@ -308,15 +335,20 @@ export default function MusimPageAdmin() {
                                         onChange={(e) => setMusim({ ...musim, nama_musim: e.target.value })}
                                     />
                                 </div>
-                                <div className="col-span-1">
-                                    <Input
-                                        type="text"
-                                        label="Jenis Musim"
-                                        variant="bordered"
-                                        value={musim.jenis_musim}
-                                        onChange={(e) => setMusim({ ...musim, jenis_musim: e.target.value })}
-                                    />
-                                </div>
+                                  <Select
+                                    items={jenis_musimSelect}
+                                    label="Jenis Musim"
+                                    variant="bordered"
+                                    selectedKeys={jenisMusimSelect}
+                                    onSelectionChange={(e) => {setjenisMusimSelect(e)
+                                        const jenis = [...e]
+                                        setMusim({ ...musim, jenis_musim: jenis[0] })}
+                                    }
+                                    >
+                                        {(jenis)=>(
+                                            <SelectItem key={jenis.value}>{jenis.value}</SelectItem>
+                                        )}
+                                    </Select>
                                 <div className="col-span-1">
                                     <Input
                                         type="date"
@@ -350,7 +382,7 @@ export default function MusimPageAdmin() {
                                 }}>
                                     Close
                                 </Button>
-                                <Button color="primary" onPress={createMusim}>
+                                <Button color="primary" onPress={showConfirmation}>
                                     Save
                                 </Button>
                             </ModalFooter>
@@ -358,6 +390,22 @@ export default function MusimPageAdmin() {
                     )}
                 </ModalContent>
             </Modal>
+    <Modal size="md" isOpen={isConfirmationOpen} onOpenChange={hideConfirmation}>
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">Confirmation</ModalHeader>
+        <ModalBody>
+          Are you sure you want to Save this Musim?
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" variant="light" onPress={hideConfirmation}>
+            Cancel
+          </Button>
+          <Button color="primary" onPress={createMusim}>
+            Confirm Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
             <Modal
                 size="md"
                 isOpen={deleteOpen}
@@ -399,18 +447,39 @@ export default function MusimPageAdmin() {
                                 })
                             }
                         />
-                        <Input
-                            type="text"
-                            label="Jenis Musim"
-                            variant="bordered"
-                            value={editingMusim.jenis_musim}
-                            onChange={(e) =>
-                                setEditingMusim({
-                                    ...editingMusim,
-                                    jenis_musim: e.target.value,
-                                })
-                            }
-                        />
+                        {/* <Card className="max-w-[400px] mt-0">
+                                <CardBody variant="bordered" className=" border rounded p-2">Jenis Kamar
+                                  <select
+                                    value={editingMusim.jenis_musim} 
+                                    disabled={!isEditing}
+                                    onChange={(e) => setEditingMusim({...editingMusim, jenis_musim: e.target.value })}
+                                  >
+                                      <option value="Promo">
+                                        Promo
+                                      </option>
+                                      <option value="High Season">
+                                        High Season
+                                      </option>
+                                    
+                                  </select>
+                                </CardBody>
+                              </Card> */}
+                              
+                              <Select
+                                    items={jenis_musimSelect}
+                                    label="Jenis Musim"
+                                    variant="bordered"
+                                    selectedKeys={jenisEditingMusimSelect}
+                                    onSelectionChange={(e) => {
+                                        setEditingJenisMusimSelect(e)
+                                        const jenis = [...e]
+                                        setEditingMusim({ ...editingMusim, jenis_musim: jenis[0] })}
+                                    }
+                                    >
+                                        {(jenis)=>(
+                                            <SelectItem key={jenis.value}>{jenis.value}</SelectItem>
+                                        )}
+                                    </Select>
                         <Input
                             type="date"
                             label="Tanggal Mulai Musim"
@@ -422,6 +491,8 @@ export default function MusimPageAdmin() {
                                     tanggal_mulai_musim: e.target.value,
                                 })
                             }
+                            min={calculateMinimumDate()}
+
                         />
                         <Input
                             type="date"
@@ -434,18 +505,42 @@ export default function MusimPageAdmin() {
                                     tanggal_selesai_musim: e.target.value,
                                 })
                             }
+                            min={calculateMinimumDate()}
                         />
                     </ModalBody>
                     <ModalFooter>
                         <Button color="danger" variant="light" onPress={() => setIsEditing(!isEditing)}>
                             Cancel
                         </Button>
-                        <Button color="primary" onPress={editMusim}>
+                        <Button color="primary" onPress={showConfirmationEdit}>
                             Save
                         </Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+    <Modal size="md" isOpen={isConfirmationOpenEdit} onOpenChange={hideConfirmationEdit}>
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">Confirmation</ModalHeader>
+        <ModalBody>
+          Are you sure you want to Edit this Kamar?
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" variant="light" onPress={() => {
+            hideConfirmationEdit();
+            setIsEditing(false);
+          }}>
+            Cancel
+          </Button>
+          <Button color="primary" variant="light" onPress={() => {
+            hideConfirmationEdit();
+            setIsEditing(false);
+            editMusim();
+          }}>
+            Confirm Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
         </>
     );
 }

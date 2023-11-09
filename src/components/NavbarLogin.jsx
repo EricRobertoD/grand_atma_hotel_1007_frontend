@@ -2,6 +2,7 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, Badge, Av
 import assets from "../assets";
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
+import PembatalanPage from "../pages/PembatalanPage";
 
 export default function NavbarPage() {
   const logoStyle = {
@@ -30,6 +31,10 @@ export default function NavbarPage() {
     navigate('/DashboardPage')
   }
 
+  const pembatalanPage = () => {
+    navigate('/PembatalanPage')
+  }
+
   return (
     <Navbar className="bg-slate-800">
       <NavbarBrand>
@@ -42,13 +47,8 @@ export default function NavbarPage() {
           </Link>
         </NavbarItem>
         <NavbarItem isActive>
-          <Link href="#" aria-current="page">
-            Customers
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive>
-          <Link href="#">
-            Integrations
+          <Link onClick={pembatalanPage} style={{ cursor: "pointer" }}>
+            Pembatalan
           </Link>
         </NavbarItem>
       </NavbarContent>

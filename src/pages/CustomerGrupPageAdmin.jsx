@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
+import { Card, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Accordion, AccordionItem } from "@nextui-org/react";
 import NavbarLoginAdmin from "../components/NavbarLoginAdmin";
 import CustomFooter from "../components/Footer";
 import { Input } from "@nextui-org/react";
@@ -15,6 +15,12 @@ export default function ReservasiPageAdmin() {
     const [profileModalOpen, setProfileModalOpen] = useState(false);
     const [detailsModalOpen, setDetailsModalOpen] = useState(false);
     const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+    const [detailsData, setDetailsData] = useState(null);
+
+    const handleDetailsClose = () => {
+        setDetailsModalOpen(false);
+        setDetailsData(null);
+    };
 
     const handleCreateClick = () => {
         setCreateModalOpen(true);
@@ -34,19 +40,18 @@ export default function ReservasiPageAdmin() {
         alamat: "",
         nama_institusi: "",
         jawaban_sq: "",
-      });
-    
+    });
+
 
     const [profileData, setProfileData] = useState({
-        id_customer: "", 
+        id_customer: "",
         nama: "",
         email: "",
-        no_telp: "", 
+        no_telp: "",
         no_identitas: "",
         alamat: "",
         nama_institusi: "",
-      });
-    const [detailsData, setDetailsData] = useState(null);
+    });
 
 
     const handleCreateSubmit = () => {
@@ -107,54 +112,54 @@ export default function ReservasiPageAdmin() {
 
     const handleEdit = () => {
         setIsEditing(true);
-      };
-      const handleSaveEdit = () => {
+    };
+    const handleSaveEdit = () => {
         const authToken = localStorage.getItem("authToken");
         try {
-          fetch(`http://127.0.0.1:8000/api/customer/${profileData.id_customer}`, {
-            method: 'PUT',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${authToken}`,
-            },
-            body: JSON.stringify(profileData), 
-          })
-            .then((response) => {
-              if (response.ok) {
-                fetchCustomers();
-                setIsEditing(false);
-                toast('🦄 Updated!', {
-                  position: "top-right",
-                  autoClose: 5000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progress: undefined,
-                  theme: "light",
-                });
-              } else {
-                toast('🤡 Fail to update!', {
-                  position: "top-right",
-                  autoClose: 5000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progress: undefined,
-                  theme: "light",
-                });
-                console.error("Failed to update Profile");
-              }
+            fetch(`http://127.0.0.1:8000/api/customer/${profileData.id_customer}`, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${authToken}`,
+                },
+                body: JSON.stringify(profileData),
             })
-            .catch((error) => {
-              console.error("Failed to update Profile", error);
-            });
+                .then((response) => {
+                    if (response.ok) {
+                        fetchCustomers();
+                        setIsEditing(false);
+                        toast('🦄 Updated!', {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "light",
+                        });
+                    } else {
+                        toast('🤡 Fail to update!', {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "light",
+                        });
+                        console.error("Failed to update Profile");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Failed to update Profile", error);
+                });
         } catch (error) {
-          console.error("Failed to update Profile", error);
+            console.error("Failed to update Profile", error);
         }
-      };
+    };
     const fetchCustomers = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
@@ -217,6 +222,7 @@ export default function ReservasiPageAdmin() {
             const result = await response.json();
             setDetailsData(result.data);
         } catch (error) {
+            setDetailsData(null);
             console.error("Error fetching details data: ", error);
         }
     };
@@ -231,7 +237,6 @@ export default function ReservasiPageAdmin() {
     const viewDetails = (customer) => {
         setSelectedCustomer(customer);
         setDetailsModalOpen(true);
-        // Fetch reservation details data when the "Details" button is clicked
         fetchDetailsData(customer.id_customer);
     };
 
@@ -261,8 +266,9 @@ export default function ReservasiPageAdmin() {
                     />
                     <Table className="py-10">
                         <TableHeader>
-                            <TableColumn>Name</TableColumn>
+                            <TableColumn>Nama</TableColumn>
                             <TableColumn>Email</TableColumn>
+                            <TableColumn>Nomor Telepon</TableColumn>
                             <TableColumn>Actions</TableColumn>
                         </TableHeader>
                         <TableBody>
@@ -278,6 +284,7 @@ export default function ReservasiPageAdmin() {
                                     <TableRow key={customer.id_customer}>
                                         <TableCell>{customer.nama}</TableCell>
                                         <TableCell>{customer.email}</TableCell>
+                                        <TableCell>{customer.no_telp}</TableCell>
                                         <TableCell>
                                             <Button
                                                 color="primary"
@@ -364,18 +371,18 @@ export default function ReservasiPageAdmin() {
                             </div>
                         )}
                     </ModalBody>
-                    
-              {isEditing ? (
-                <div>
-                  <Button onClick={handleSaveEdit} color="primary" className="mt-2 ml-4">Save</Button>
-                </div>
-              ) : (
-                <Button onClick={handleEdit} className="absolute right-10 top-8" variant="primary">
-                  <BiSolidMessageSquareEdit className="w-28 h-28" />
-                </Button>
-              )}
+
+                    {isEditing ? (
+                        <div>
+                            <Button onClick={handleSaveEdit} color="primary" className="mt-2 ml-4">Save</Button>
+                        </div>
+                    ) : (
+                        <Button onClick={handleEdit} className="absolute right-10 top-8" variant="primary">
+                            <BiSolidMessageSquareEdit className="w-28 h-28" />
+                        </Button>
+                    )}
                     <ModalFooter>
-                        <Button color="danger" onPress={() => {setProfileModalOpen(false); setIsEditing(false); }}>
+                        <Button color="danger" onPress={() => { setProfileModalOpen(false); setIsEditing(false); }}>
                             Close
                         </Button>
                     </ModalFooter>
@@ -389,19 +396,72 @@ export default function ReservasiPageAdmin() {
                 onOpenChange={() => setDetailsModalOpen(!detailsModalOpen)}
                 scrollBehavior={"inside"}
             >
+
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">Reservation Details</ModalHeader>
                     <ModalBody>
-                        {detailsData && detailsData.map((reservation) => ( //detailsData && berguna untuk mengecek apakah detailsData sudah ada atau belum dan jika belum maka tidak ada masalah, tapi jika tidak mw menggunakan ini, maka harus deklarasi data dengan "" terlebih dahulu agar tidak error
-                            <div key={reservation.id_reservasi}>
-                                <p>ID Booking: {reservation.id_booking}</p>
-                                <p>Tanggal Reservasi: {reservation.tanggal_reservasi}</p>
-                                {/* Add more reservation details here */}
-                            </div>
-                        ))}
+                        {detailsData && (
+                            <Accordion isCompact>
+                                {detailsData.map((reservation) => (
+                                    <AccordionItem key={reservation.id_reservasi} aria-label="Accordion 1" title={reservation.id_booking}>
+                                        <div>
+                                            <Input
+                                                type="text"
+                                                label="ID Booking"
+                                                disabled
+                                                variant="bordered"
+                                                value={reservation.id_booking}
+                                            />
+                                            <Input
+                                                type="text"
+                                                label="Tanggal Reservasi"
+                                                disabled
+                                                variant="bordered"
+                                                value={reservation.tanggal_reservasi}
+                                            />
+                                            <Input
+                                                type="text"
+                                                label="Tanggal Check in"
+                                                disabled
+                                                variant="bordered"
+                                                value={reservation.tanggal_checkin}
+                                            />
+                                            <Input
+                                                type="text"
+                                                label="Tanggal Check Out"
+                                                disabled
+                                                variant="bordered"
+                                                value={reservation.tanggal_checkout}
+                                            />
+                                            <Input
+                                                type="text"
+                                                label="status"
+                                                disabled
+                                                variant="bordered"
+                                                value={reservation.status}
+                                            />
+                                            <Input
+                                                type="text"
+                                                label="Total Dewasa"
+                                                disabled
+                                                variant="bordered"
+                                                value={reservation.dewasa}
+                                            />
+                                            <Input
+                                                type="text"
+                                                label="Total Anak"
+                                                disabled
+                                                variant="bordered"
+                                                value={reservation.anak}
+                                            />
+                                        </div>
+                                    </AccordionItem>
+                                ))}
+                            </Accordion>
+                        )}
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onPress={() => setDetailsModalOpen(false)}>
+                        <Button color="primary" onPress={() => handleDetailsClose()}>
                             Close
                         </Button>
                     </ModalFooter>
@@ -416,90 +476,72 @@ export default function ReservasiPageAdmin() {
                 <ModalContent>
                     <ModalHeader className="flex flex-col gap-1">Create Customer</ModalHeader>
                     <ModalBody>
-                        
-                <div className="col-span-1">
-                  <Input
-                    type="text"
-                    label="Nama"
-                    variant="bordered"
-                    value={registerData.nama}
-                    onChange={(e) =>
-                      setRegisterData({ ...registerData, nama: e.target.value })
-                    }
-                  />
-                  <Input
-                    type="text"
-                    label="Username"
-                    variant="bordered"
-                    value={registerData.username}
-                    onChange={(e) =>
-                      setRegisterData({ ...registerData, username: e.target.value })
-                    }
-                  />
-                  <Input
-                    type="text"
-                    label="Email"
-                    variant="bordered"
-                    value={registerData.email}
-                    onChange={(e) =>
-                      setRegisterData({ ...registerData, email: e.target.value })
-                    }
-                  />
-                  <Input
-                    type="password"
-                    label="Password"
-                    variant="bordered"
-                    value={registerData.password}
-                    onChange={(e) =>
-                      setRegisterData({ ...registerData, password: e.target.value })
-                    }
-                  />
-                  <Input
-                    type="number"
-                    label="Nomor Telepon"
-                    variant="bordered"
-                    value={registerData.no_telp}
-                    onChange={(e) =>
-                      setRegisterData({ ...registerData, no_telp: e.target.value })
-                    }
-                  />
-                  <Input
-                    type="number"
-                    label="Nomor Identitas"
-                    variant="bordered"
-                    value={registerData.no_identitas}
-                    onChange={(e) =>
-                      setRegisterData({ ...registerData, no_identitas: e.target.value })
-                    }
-                  />
-                  <Input
-                    type="text"
-                    label="Alamat"
-                    variant="bordered"
-                    value={registerData.alamat}
-                    onChange={(e) =>
-                      setRegisterData({ ...registerData, alamat: e.target.value })
-                    }
-                  />
-                  <Input
-                    type="text"
-                    label="Nama Institusi"
-                    variant="bordered"
-                    value={registerData.nama_institusi}
-                    onChange={(e) =>
-                      setRegisterData({ ...registerData, nama_institusi: e.target.value })
-                    }
-                  />
-                  <Input
-                    type="text"
-                    label="Apa nama hewan peliharaan pertama client?"
-                    variant="bordered"
-                    value={registerData.jawaban_sq}
-                    onChange={(e) =>
-                      setRegisterData({ ...registerData, jawaban_sq: e.target.value })
-                    }
-                  />
-                </div>
+
+                        <div className="col-span-1">
+                            <Input
+                                type="text"
+                                label="Nama"
+                                variant="bordered"
+                                value={registerData.nama}
+                                onChange={(e) =>
+                                    setRegisterData({ ...registerData, nama: e.target.value })
+                                }
+                            />
+                            <Input
+                                type="text"
+                                label="Username"
+                                variant="bordered"
+                                value={registerData.username}
+                                onChange={(e) =>
+                                    setRegisterData({ ...registerData, username: e.target.value })
+                                }
+                            />
+                            <Input
+                                type="text"
+                                label="Email"
+                                variant="bordered"
+                                value={registerData.email}
+                                onChange={(e) =>
+                                    setRegisterData({ ...registerData, email: e.target.value })
+                                }
+                            />
+                            <Input
+                                type="number"
+                                label="Nomor Telepon"
+                                variant="bordered"
+                                value={registerData.no_telp}
+                                onChange={(e) =>
+                                    setRegisterData({ ...registerData, no_telp: e.target.value })
+                                }
+                            />
+                            <Input
+                                type="number"
+                                label="Nomor Identitas"
+                                variant="bordered"
+                                value={registerData.no_identitas}
+                                onChange={(e) =>
+                                    setRegisterData({ ...registerData, no_identitas: e.target.value })
+                                }
+                            />
+                            <Input
+                                type="text"
+                                label="Alamat"
+                                variant="bordered"
+                                value={registerData.alamat}
+                                onChange={(e) =>
+                                    setRegisterData({ ...registerData, alamat: e.target.value })
+                                }
+                            />
+                            <Input
+                                type="text"
+                                label="Nama Institusi"
+                                variant="bordered"
+                                value={registerData.nama_institusi}
+                                onChange={(e) =>
+                                    setRegisterData({ ...registerData, nama_institusi: e.target.value })
+                                }
+                            />
+                        </div>
                         {/* Add more input fields */}
                     </ModalBody>
                     <ModalFooter>

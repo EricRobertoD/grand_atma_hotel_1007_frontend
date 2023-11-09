@@ -14,6 +14,8 @@ import TarifPageAdmin from "./pages/TarifPageAdmin"
 import FasilitasTambahanPageAdmin from "./pages/FasilitasTambahanPageAdmin"
 import ForgetPasswordPage from "./pages/ForgetPasswordPage"
 import CustomerGrupPageAdmin from "./pages/CustomerGrupPageAdmin"
+import TransaksiPageAdmin from "./pages/TransaksiPageAdmin"
+import PembatalanPage from "./pages/PembatalanPage"
 
 function App() {
   return <>
@@ -33,6 +35,9 @@ function App() {
         <Route path="/TarifPageAdmin" element={<TarifPageAdmin/>}/>
         <Route path="/ForgetPasswordPage" element={<ForgetPasswordPage/>}/>
         <Route path="/CustomerGrupPageAdmin" element={<CustomerGrupPageAdmin/>}/>
+        <Route path="/TransaksiPageAdmin" element={<TransaksiPageAdmin/>}/>
+        <Route path="/PembatalanPage" element={<PembatalanPage/>}/>
+        
       </Routes>
     </BrowserRouter>
     </>

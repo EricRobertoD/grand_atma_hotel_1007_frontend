@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 
 function ProfilePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isConfirmationOpenEdit, setIsConfirmationOpenEdit] = useState(false);
   const [customer, setCustomer] = useState({
     username: "",
     nama: "",
@@ -22,6 +23,13 @@ function ProfilePage() {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+
+  const showConfirmationEdit = () => {
+    setIsConfirmationOpenEdit(true);
+  };
+  const hideConfirmationEdit = () => {
+    setIsConfirmationOpenEdit(false);
+  };
 
   const fetchCustomerData = async () => {
     try {
@@ -225,7 +233,7 @@ function ProfilePage() {
 
         {isEditing ? (
           <div>
-            <Button color="primary" onPress={handleSave}>Save</Button>
+            <Button color="primary" onPress={showConfirmationEdit}>Save</Button>
             <Button className="mt-10" color="danger" variant="light" onPress={handleCancel}>
               Cancel
             </Button>
@@ -240,6 +248,29 @@ function ProfilePage() {
         </Button>
       </Card>
     </div>
+    <Modal size="md" isOpen={isConfirmationOpenEdit} onOpenChange={hideConfirmationEdit}>
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">Confirmation</ModalHeader>
+        <ModalBody>
+          Are you sure you want to Edit this Kamar?
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" variant="light" onPress={() => {
+            hideConfirmationEdit();
+            setIsEditing(false);
+          }}>
+            Cancel
+          </Button>
+          <Button color="primary" variant="light" onPress={() => {
+            hideConfirmationEdit();
+            setIsEditing(false);
+            handleSave();
+          }}>
+            Confirm Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
     <Modal
       size={"2xl"}
       isOpen={isOpen}

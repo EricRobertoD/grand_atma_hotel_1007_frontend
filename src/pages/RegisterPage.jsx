@@ -161,20 +161,8 @@ const RegisterPage = () => {
               />
             </div>
             <div>
-              <label htmlFor="namaInst" className="block text-gray-600">
-                Nama Institusi
-              </label>
-              <input
-                type="text"
-                id="namaInst"
-                className="w-full px-3 py-2 border rounded-md"
-                value={namaInst}
-                onChange={(e) => setNamaInst(e.target.value)}
-              />
-            </div>
-            <div>
               <label htmlFor="address" className="block text-gray-600">
-                Address
+                Alamat
               </label>
               <input
                 type="text"

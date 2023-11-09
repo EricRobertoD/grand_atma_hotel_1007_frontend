@@ -43,6 +43,9 @@ export default function NavbarLoginAdmin() {
   const customer = () => {
     navigate('/CustomerGrupPageAdmin')
   }
+  const transaksi = () => {
+    navigate('/TransaksiPageAdmin')
+  }
 
   return (
     <Navbar className="bg-slate-800">
@@ -83,6 +86,13 @@ export default function NavbarLoginAdmin() {
           <NavbarItem isActive>
             <Link onClick={customer} style={{ cursor: "pointer" }}>
               Customer
+            </Link>
+          </NavbarItem>
+        ) : null}
+        {(id_role == 5 )? (
+          <NavbarItem isActive>
+            <Link onClick={transaksi} style={{ cursor: "pointer" }}>
+              Transaksi
             </Link>
           </NavbarItem>
         ) : null}

@@ -15,6 +15,9 @@ export default function KamarPageAdmin() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedKamarDetail, setSelectedKamarDetail] = useState(null);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [isConfirmationOpenEdit, setIsConfirmationOpenEdit] = useState(false);
+
   const [kamar, setKamar] = useState({
     no_kamar: "",
     id_jeniskamar: "",
@@ -24,6 +27,21 @@ export default function KamarPageAdmin() {
 
   const handleEdit = () => {
     setIsEditing(true);
+  };
+
+  // Function to show the confirmation modal
+  const showConfirmation = () => {
+    setIsConfirmationOpen(true);
+  };
+  const hideConfirmation = () => {
+    setIsConfirmationOpen(false);
+  };
+
+  const showConfirmationEdit = () => {
+    setIsConfirmationOpenEdit(true);
+  };
+  const hideConfirmationEdit = () => {
+    setIsConfirmationOpenEdit(false);
   };
 
   const handleDetail = (id_kamar) => {
@@ -87,7 +105,7 @@ export default function KamarPageAdmin() {
             text: 'Kamar has been deleted.',
           });
           console.log('Delete kamar successful');
-          fetchData(); 
+          fetchData();
         } else {
           console.log('Delete kamar failed');
           Swal.fire({
@@ -211,7 +229,7 @@ export default function KamarPageAdmin() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${authToken}`,
         },
-        body: JSON.stringify(selectedKamarDetail), 
+        body: JSON.stringify(selectedKamarDetail),
       })
         .then((response) => {
           if (response.ok) {
@@ -323,7 +341,6 @@ export default function KamarPageAdmin() {
                 <Input
                   type="text"
                   label="No Kamar"
-                  disabled={!isEditing}
                   variant="bordered"
                   value={kamar.no_kamar}
                   onChange={(e) => setKamar({ ...kamar, no_kamar: e.target.value })}
@@ -370,12 +387,28 @@ export default function KamarPageAdmin() {
               <Button color="danger" variant="light" onPress={onClose}>
                 Close
               </Button>
-              <Button color="primary" onPress={createKamar}>
+              <Button color="primary" onPress={showConfirmation}>
                 Save
               </Button>
             </ModalFooter>
           </>
         )}
+      </ModalContent>
+    </Modal>
+    <Modal size="md" isOpen={isConfirmationOpen} onOpenChange={hideConfirmation}>
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">Confirmation</ModalHeader>
+        <ModalBody>
+          Are you sure you want to Save this Kamar?
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" variant="light" onPress={hideConfirmation}>
+            Cancel
+          </Button>
+          <Button color="primary" onPress={createKamar}>
+            Confirm Save
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
     <Modal
@@ -430,25 +463,25 @@ export default function KamarPageAdmin() {
                         disabled={!isEditing}
                         onChange={(e) => setSelectedKamarDetail({ ...selectedKamarDetail, pilih_bed: e.target.value })} // Use e.target.value directly
                       >
-                      <option value="1 Double" key={"1 Double"}>
-                        1 Double
-                      </option>
-                      <option value="1 Twin" key={"1 Twin"}>
-                        1 Twin
-                      </option>
-                      <option value="2 Twin" key={"2 Twin"}>
-                        2 Twin
-                      </option>
-                      <option value="1 King" key={"1 King"}>
-                        1 King
-                      </option>
+                        <option value="1 Double" key={"1 Double"}>
+                          1 Double
+                        </option>
+                        <option value="1 Twin" key={"1 Twin"}>
+                          1 Twin
+                        </option>
+                        <option value="2 Twin" key={"2 Twin"}>
+                          2 Twin
+                        </option>
+                        <option value="1 King" key={"1 King"}>
+                          1 King
+                        </option>
                       </select>
                     </CardBody>
                   </Card>
                   <Card className="max-w-[400px] mt-4">
                     <CardBody variant="bordered" className=" border rounded p-2">Jenis Kamar
                       <select
-                        value={selectedKamarDetail.jenis_kamar.id_jeniskamar} 
+                        value={selectedKamarDetail.jenis_kamar.id_jeniskamar}
                         disabled={!isEditing}
                         onChange={(e) => setSelectedKamarDetail({ ...selectedKamarDetail, jenis_kamar: { id_jeniskamar: e.target.value } })}
                       >
@@ -457,14 +490,14 @@ export default function KamarPageAdmin() {
                             {jk.jenis_kamar}
                           </option>
                         ))}
-                      </select> 
+                      </select>
                     </CardBody>
                   </Card>
                 </div>
               </div>
               {isEditing ? (
                 <div>
-                  <Button onClick={handleSaveEdit}>Save</Button>
+                  <Button onClick={showConfirmationEdit}>Save</Button>
                 </div>
               ) : (
                 <Button onClick={handleEdit} className="absolute right-10 top-10" variant="primary">
@@ -482,6 +515,29 @@ export default function KamarPageAdmin() {
             </ModalFooter>
           </>
         )}
+      </ModalContent>
+    </Modal>
+    <Modal size="md" isOpen={isConfirmationOpenEdit} onOpenChange={hideConfirmationEdit}>
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">Confirmation</ModalHeader>
+        <ModalBody>
+          Are you sure you want to Edit this Kamar?
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" variant="light" onPress={() => {
+            hideConfirmationEdit();
+            setIsEditing(false);
+          }}>
+            Cancel
+          </Button>
+          <Button color="primary" variant="light" onPress={() => {
+            hideConfirmationEdit();
+            setIsEditing(false);
+            handleSaveEdit();
+          }}>
+            Confirm Save
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   </>

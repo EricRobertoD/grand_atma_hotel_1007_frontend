@@ -11,6 +11,26 @@ export default function FasilitasTambahanPage() {
     const [isEditing, setIsEditing] = useState(false);
     const [fasilitasToDelete, setFasilitasToDelete] = useState(null);
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+    const [isConfirmationOpenEdit, setIsConfirmationOpenEdit] = useState(false);
+
+    
+// Function to show the confirmation modal
+const showConfirmation = () => {
+    setIsConfirmationOpen(true);
+  };
+  
+  // Function to hide the confirmation modal
+  const hideConfirmation = () => {
+    setIsConfirmationOpen(false);
+  };
+  const showConfirmationEdit = () => {
+    setIsConfirmationOpenEdit(true);
+  };
+  const hideConfirmationEdit = () => {
+    setIsConfirmationOpenEdit(false);
+  };
+  
     const [editingFasilitas, setEditingFasilitas] = useState({
         fasilitas_tambahan: "",
         tarif: "",
@@ -289,7 +309,7 @@ export default function FasilitasTambahanPage() {
                                 </div>
                                 <div className="col-span-1">
                                     <Input
-                                        type="text"
+                                        type="number"
                                         label="Tarif"
                                         variant="bordered"
                                         value={fasilitas.tarif}
@@ -317,7 +337,7 @@ export default function FasilitasTambahanPage() {
                                 }}>
                                     Close
                                 </Button>
-                                <Button color="primary" onPress={createFasilitas}>
+                                <Button color="primary" onPress={showConfirmation}>
                                     Save
                                 </Button>
                             </ModalFooter>
@@ -325,6 +345,23 @@ export default function FasilitasTambahanPage() {
                     )}
                 </ModalContent>
             </Modal>
+            
+    <Modal size="md" isOpen={isConfirmationOpen} onOpenChange={hideConfirmation}>
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">Confirmation</ModalHeader>
+        <ModalBody>
+          Are you sure you want to Save this Fasilitas?
+        </ModalBody>
+        <ModalFooter>
+          <Button color="danger" variant="light" onPress={hideConfirmation}>
+            Cancel
+          </Button>
+          <Button color="primary" onPress={createFasilitas}>
+            Confirm Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
             <Modal
                 size="md"
                 isOpen={deleteOpen}
@@ -397,13 +434,35 @@ export default function FasilitasTambahanPage() {
                         <Button color="danger" variant="light" onPress={() => setIsEditing(!isEditing)}>
                             Cancel
                         </Button>
-                        <Button color="primary" onPress={editFasilitas}>
+                        <Button color="primary" onPress={showConfirmationEdit}>
                             Save
                         </Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>
-
+            
+    <Modal size="md" isOpen={isConfirmationOpenEdit} onOpenChange={hideConfirmationEdit}>
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">Confirmation</ModalHeader>
+        <ModalBody>
+          Are you sure you want to Edit this Fasilitas?
+        </ModalBody>
+        <ModalFooter>
+            <Button color="danger" variant="light" onPress={() => {
+  hideConfirmationEdit();
+  setIsEditing(!isEditing);
+}}>
+  Cancel
+</Button>
+          <Button color="primary" onPress={() => {
+  editFasilitas();
+  setIsEditing(!isEditing);
+}}>
+            Confirm Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
 
         </>
     );

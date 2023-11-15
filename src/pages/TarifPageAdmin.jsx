@@ -44,7 +44,7 @@ export default function TarifMusimPageAdmin() {
   const fetchData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/tarifMusim", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/tarifMusim", {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -66,7 +66,7 @@ export default function TarifMusimPageAdmin() {
   const fetchDataJK = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/jenisKamar", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/jenisKamar", {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -88,7 +88,7 @@ export default function TarifMusimPageAdmin() {
   const fetchDataMS = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/musim", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/musim", {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -110,7 +110,7 @@ export default function TarifMusimPageAdmin() {
   const createTarifMusim = () => {
     Swal.showLoading();
     const authToken = localStorage.getItem("authToken");
-    fetch("http://127.0.0.1:8000/api/tarifMusim", {
+    fetch("https://p3l-be-eric.frederikus.com/api/tarifMusim", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -171,7 +171,7 @@ export default function TarifMusimPageAdmin() {
   const editTarifMusim = () => {
     Swal.showLoading();
     const authToken = localStorage.getItem("authToken");
-    fetch(`http://127.0.0.1:8000/api/tarifMusim/${editingTarifMusim.id_tarifmusim}`, {
+    fetch(`https://p3l-be-eric.frederikus.com/api/tarifMusim/${editingTarifMusim.id_tarifmusim}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -242,7 +242,7 @@ export default function TarifMusimPageAdmin() {
     Swal.showLoading();
     const authToken = localStorage.getItem("authToken");
 
-    fetch(`http://127.0.0.1:8000/api/tarifMusim/${id}`, {
+    fetch(`https://p3l-be-eric.frederikus.com/api/tarifMusim/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${authToken}`,

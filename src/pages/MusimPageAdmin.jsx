@@ -68,7 +68,7 @@ export default function MusimPageAdmin() {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/musim", {
+            const response = await fetch("https://p3l-be-eric.frederikus.com/api/musim", {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -90,7 +90,7 @@ export default function MusimPageAdmin() {
     const createMusim = () => {
         Swal.showLoading();
         const authToken = localStorage.getItem("authToken");
-        fetch('http://127.0.0.1:8000/api/musim', {
+        fetch('https://p3l-be-eric.frederikus.com/api/musim', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ export default function MusimPageAdmin() {
     const editMusim = () => {
         Swal.showLoading();
         const authToken = localStorage.getItem("authToken");
-        fetch(`http://127.0.0.1:8000/api/musim/${editingMusim.id_musim}`, {
+        fetch(`https://p3l-be-eric.frederikus.com/api/musim/${editingMusim.id_musim}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -216,7 +216,7 @@ export default function MusimPageAdmin() {
         Swal.showLoading();
         const authToken = localStorage.getItem("authToken");
 
-        fetch(`http://127.0.0.1:8000/api/musim/${musimToDelete.id_musim}`, {
+        fetch(`https://p3l-be-eric.frederikus.com/api/musim/${musimToDelete.id_musim}`, {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${authToken}`,

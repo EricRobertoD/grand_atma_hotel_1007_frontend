@@ -46,7 +46,7 @@ export default function KamarPageAdmin() {
 
   const handleDetail = (id_kamar) => {
     const authToken = localStorage.getItem("authToken");
-    fetch(`http://127.0.0.1:8000/api/kamar/${id_kamar}`, {
+    fetch(`https://p3l-be-eric.frederikus.com/api/kamar/${id_kamar}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -88,7 +88,7 @@ export default function KamarPageAdmin() {
     Swal.showLoading();
     const authToken = localStorage.getItem("authToken");
 
-    fetch(`http://127.0.0.1:8000/api/kamar/${id_kamar}`, {
+    fetch(`https://p3l-be-eric.frederikus.com/api/kamar/${id_kamar}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -124,7 +124,7 @@ export default function KamarPageAdmin() {
   const fetchData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/kamar", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/kamar", {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -146,7 +146,7 @@ export default function KamarPageAdmin() {
   const fetchDataJK = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/jenisKamar", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/jenisKamar", {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -169,7 +169,7 @@ export default function KamarPageAdmin() {
   const createKamar = () => {
     Swal.showLoading();
     const authToken = localStorage.getItem("authToken");
-    fetch('http://127.0.0.1:8000/api/kamar', {
+    fetch('https://p3l-be-eric.frederikus.com/api/kamar', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -222,7 +222,7 @@ export default function KamarPageAdmin() {
   const handleSaveEdit = () => {
     const authToken = localStorage.getItem("authToken");
     try {
-      fetch(`http://127.0.0.1:8000/api/kamar/${selectedKamarDetail.id_kamar}`, {
+      fetch(`https://p3l-be-eric.frederikus.com/api/kamar/${selectedKamarDetail.id_kamar}`, {
         method: 'PUT',
         headers: {
           'Accept': 'application/json',

@@ -16,7 +16,7 @@ const LoginPageAdmin = () => {
       password: password,
     };
 
-    fetch('http://127.0.0.1:8000/api/loginPegawai', {
+    fetch('https://p3l-be-eric.frederikus.com/api/loginPegawai', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

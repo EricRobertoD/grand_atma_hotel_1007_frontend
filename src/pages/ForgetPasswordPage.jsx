@@ -23,7 +23,7 @@ const ForgetPasswordPage = () => {
       jawaban_sq: jawabansq,
     };
 
-    fetch('http://127.0.0.1:8000/api/forgetPassword', {
+    fetch('https://p3l-be-eric.frederikus.com/api/forgetPassword', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

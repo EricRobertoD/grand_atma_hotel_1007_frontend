@@ -78,7 +78,7 @@ export default function DashboardPage() {
 
     axios({
       method: 'post',
-      url: `http://127.0.0.1:8000/api/updateBayar/${selectedReservation.id_reservasi}`,
+      url: `https://p3l-be-eric.frederikus.com/api/updateBayar/${selectedReservation.id_reservasi}`,
       headers: {
         "Content-Type": "multipart/form-data",
         Accept: "application/json",
@@ -125,7 +125,7 @@ export default function DashboardPage() {
   const fetchDataFasilitas = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/fasilitasTambahan", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/fasilitasTambahan", {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -147,7 +147,7 @@ export default function DashboardPage() {
   const fetchData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/reservasi", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/reservasi", {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -168,7 +168,7 @@ export default function DashboardPage() {
   const downloadTandaTerima = async (id) => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch(`http://127.0.0.1:8000/api/tandaTerimaReservasi/${id}`, {
+      const response = await fetch(`https://p3l-be-eric.frederikus.com/api/tandaTerimaReservasi/${id}`, {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -203,7 +203,7 @@ export default function DashboardPage() {
       }
 
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/reservasiAvailable", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/reservasiAvailable", {
         method: "POST",
         headers: {
           "Content-Type": "application/json", // Use "Content-Type" instead of "Accept"
@@ -246,7 +246,7 @@ export default function DashboardPage() {
   
         const authToken = localStorage.getItem("authToken");
   
-        fetch('http://127.0.0.1:8000/api/transaksiFasilitas', {
+        fetch('https://p3l-be-eric.frederikus.com/api/transaksiFasilitas', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -318,7 +318,7 @@ export default function DashboardPage() {
         Swal.showLoading();
         const authToken = localStorage.getItem("authToken");
         
-        fetch('http://127.0.0.1:8000/api/reservasi', {
+        fetch('https://p3l-be-eric.frederikus.com/api/reservasi', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

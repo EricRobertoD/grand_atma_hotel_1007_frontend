@@ -11,7 +11,7 @@ export default function PembatalanPage() {
   const fetchPembatalanData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/getPembatalan", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/getPembatalan", {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -53,7 +53,7 @@ export default function PembatalanPage() {
         if (result.isConfirmed) {
           Swal.showLoading();
   
-          const response = await fetch(`http://127.0.0.1:8000/api/reservasi/${id_reservasi}`, {
+          const response = await fetch(`https://p3l-be-eric.frederikus.com/api/reservasi/${id_reservasi}`, {
             method: "DELETE",
             headers: {
               Accept: "application/json",

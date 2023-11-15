@@ -46,7 +46,7 @@ const showConfirmation = () => {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/fasilitasTambahan", {
+            const response = await fetch("https://p3l-be-eric.frederikus.com/api/fasilitasTambahan", {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -68,7 +68,7 @@ const showConfirmation = () => {
     const createFasilitas = () => {
         Swal.showLoading();
         const authToken = localStorage.getItem("authToken");
-        fetch('http://127.0.0.1:8000/api/fasilitasTambahan', {
+        fetch('https://p3l-be-eric.frederikus.com/api/fasilitasTambahan', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ const showConfirmation = () => {
     const editFasilitas = () => {
         Swal.showLoading();
         const authToken = localStorage.getItem("authToken");
-        fetch(`http://127.0.0.1:8000/api/fasilitasTambahan/${editingFasilitas.id_fasilitas}`, {
+        fetch(`https://p3l-be-eric.frederikus.com/api/fasilitasTambahan/${editingFasilitas.id_fasilitas}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -192,7 +192,7 @@ const showConfirmation = () => {
         Swal.showLoading();
         const authToken = localStorage.getItem("authToken");
 
-        fetch(`http://127.0.0.1:8000/api/fasilitasTambahan/${id_fasilitas}`, {
+        fetch(`https://p3l-be-eric.frederikus.com/api/fasilitasTambahan/${id_fasilitas}`, {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${authToken}`,

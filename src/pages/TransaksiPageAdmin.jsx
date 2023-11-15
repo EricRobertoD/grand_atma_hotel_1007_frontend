@@ -94,7 +94,7 @@ export default function TransaksiPageAdmin() {
 
         const authToken = localStorage.getItem("authToken");
 
-        fetch('http://127.0.0.1:8000/api/transaksiFasilitas', {
+        fetch('https://p3l-be-eric.frederikus.com/api/transaksiFasilitas', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ export default function TransaksiPageAdmin() {
   const fetchDataFasilitas = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/fasilitasTambahan", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/fasilitasTambahan", {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -164,7 +164,7 @@ export default function TransaksiPageAdmin() {
   const fetchCustomers = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/customerGrup", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/customerGrup", {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -192,7 +192,7 @@ export default function TransaksiPageAdmin() {
       }
 
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/reservasiAvailable", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/reservasiAvailable", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -225,7 +225,7 @@ export default function TransaksiPageAdmin() {
 
     axios({
       method: 'post',
-      url: `http://127.0.0.1:8000/api/updateBayar/${selectedReservation.id_reservasi}`,
+      url: `https://p3l-be-eric.frederikus.com/api/updateBayar/${selectedReservation.id_reservasi}`,
       headers: {
         "Content-Type": "multipart/form-data",
         Accept: "application/json",
@@ -286,7 +286,7 @@ export default function TransaksiPageAdmin() {
         };
 
         const authToken = localStorage.getItem("authToken");
-        fetch('http://127.0.0.1:8000/api/reservasiGrup', {
+        fetch('https://p3l-be-eric.frederikus.com/api/reservasiGrup', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -349,7 +349,7 @@ export default function TransaksiPageAdmin() {
   const downloadTandaTerima = async (id) => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch(`http://127.0.0.1:8000/api/tandaTerimaReservasi/${id}`, {
+      const response = await fetch(`https://p3l-be-eric.frederikus.com/api/tandaTerimaReservasi/${id}`, {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -377,7 +377,7 @@ export default function TransaksiPageAdmin() {
   const fetchReservasiData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/reservasiGrup", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/reservasiGrup", {
         method: "GET",
         headers: {
           Accept: "application/json",

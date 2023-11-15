@@ -26,7 +26,7 @@ export default function JenisKamarSlider() {
   const fetchJenisKamarData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/jenisKamarPublic", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/jenisKamarPublic", {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -70,7 +70,7 @@ export default function JenisKamarSlider() {
         >
           {jenisKamar.map((room, i) => (
             <SwiperSlide key={i}>
-              <img src={"http://127.0.0.1:8000/" + room.gambar} />
+              <img src={"https://p3l-be-eric.frederikus.com/" + room.gambar} />
               <Card>
                 <CardHeader>{room.jenis_kamar}</CardHeader>
                 <CardBody>
@@ -93,7 +93,7 @@ export default function JenisKamarSlider() {
   <ModalContent style={{ maxHeight: '80vh', overflowY: 'auto' }}>
             <ModalHeader>{selectedRoom.jenis_kamar}</ModalHeader>
             <ModalBody>
-              <img src={"http://127.0.0.1:8000/" + selectedRoom.gambar} />
+              <img src={"https://p3l-be-eric.frederikus.com/" + selectedRoom.gambar} />
               <CardBody>
                 
                 {selectedRoom.jenis_bed}

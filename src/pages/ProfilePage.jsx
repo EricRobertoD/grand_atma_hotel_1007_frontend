@@ -34,7 +34,7 @@ function ProfilePage() {
   const fetchCustomerData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/customer", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/customer", {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -72,7 +72,7 @@ function ProfilePage() {
       //   no_identitas: customer.no_identitas,
       // };
 
-      const response = await fetch("http://127.0.0.1:8000/api/customer", {
+      const response = await fetch("https://p3l-be-eric.frederikus.com/api/customer", {
         method: 'PUT',
         headers: {
           'Accept': 'application/json',
@@ -116,7 +116,7 @@ function ProfilePage() {
 
   const changePassword = async () => {
     const authToken = localStorage.getItem("authToken");
-      await fetch("http://127.0.0.1:8000/api/changePassword", {
+      await fetch("https://p3l-be-eric.frederikus.com/api/changePassword", {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

@@ -56,7 +56,7 @@ export default function ReservasiPageAdmin() {
 
     const handleCreateSubmit = () => {
         Swal.showLoading();
-        fetch('http://127.0.0.1:8000/api/registerGrup', {
+        fetch('https://p3l-be-eric.frederikus.com/api/registerGrup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ export default function ReservasiPageAdmin() {
     const handleSaveEdit = () => {
         const authToken = localStorage.getItem("authToken");
         try {
-            fetch(`http://127.0.0.1:8000/api/customer/${profileData.id_customer}`, {
+            fetch(`https://p3l-be-eric.frederikus.com/api/customer/${profileData.id_customer}`, {
                 method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
@@ -163,7 +163,7 @@ export default function ReservasiPageAdmin() {
     const fetchCustomers = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/customerGrup", {
+            const response = await fetch("https://p3l-be-eric.frederikus.com/api/customerGrup", {
                 method: "GET",
                 headers: {
                     Accept: "application/json",
@@ -185,7 +185,7 @@ export default function ReservasiPageAdmin() {
     const fetchProfileData = async (customerId) => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`http://127.0.0.1:8000/api/customer/${customerId}`, {
+            const response = await fetch(`https://p3l-be-eric.frederikus.com/api/customer/${customerId}`, {
                 method: "GET",
                 headers: {
                     Accept: "application json",
@@ -207,7 +207,7 @@ export default function ReservasiPageAdmin() {
     const fetchDetailsData = async (customerId) => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`http://127.0.0.1:8000/api/reservasi/${customerId}`, {
+            const response = await fetch(`https://p3l-be-eric.frederikus.com/api/reservasi/${customerId}`, {
                 method: "GET",
                 headers: {
                     Accept: "application json",

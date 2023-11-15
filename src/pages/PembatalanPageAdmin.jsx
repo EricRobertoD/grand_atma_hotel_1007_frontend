@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { Card, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Input } from "@nextui-org/react";
-import NavbarLogin from "../components/NavbarLogin";
 import CustomFooter from "../components/Footer";
 import Swal from "sweetalert2";
+import NavbarLoginAdmin from "../components/NavbarLoginAdmin";
 
-export default function PembatalanPage() {
+export default function PembatalanPageAdmin() {
   const [search, setSearch] = useState("");
   const [pembatalanData, setPembatalanData] = useState([]);
 
   const fetchPembatalanData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/getPembatalan", {
+      const response = await fetch("http://127.0.0.1:8000/api/getPembatalanGrup", {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -90,7 +90,7 @@ export default function PembatalanPage() {
 
   return (
     <>
-      <NavbarLogin />
+      <NavbarLoginAdmin />
       <Card className="px-10 py-10">
         <div className="container mx-auto py-10">
           <Input

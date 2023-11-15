@@ -16,6 +16,7 @@ import ForgetPasswordPage from "./pages/ForgetPasswordPage"
 import CustomerGrupPageAdmin from "./pages/CustomerGrupPageAdmin"
 import TransaksiPageAdmin from "./pages/TransaksiPageAdmin"
 import PembatalanPage from "./pages/PembatalanPage"
+import PembatalanPageAdmin from "./pages/PembatalanPageAdmin"
 
 function App() {
   return <>
@@ -37,6 +38,7 @@ function App() {
         <Route path="/CustomerGrupPageAdmin" element={<CustomerGrupPageAdmin/>}/>
         <Route path="/TransaksiPageAdmin" element={<TransaksiPageAdmin/>}/>
         <Route path="/PembatalanPage" element={<PembatalanPage/>}/>
+        <Route path="/PembatalanPageAdmin" element={<PembatalanPageAdmin/>}/>
         
       </Routes>
     </BrowserRouter>

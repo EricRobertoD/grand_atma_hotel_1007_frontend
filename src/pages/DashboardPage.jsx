@@ -1,4 +1,4 @@
-import { Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, AccordionItem, Accordion, Card, SelectItem, Select} from "@nextui-org/react";
+import { Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, AccordionItem, Accordion, Card, SelectItem, Select } from "@nextui-org/react";
 import NavbarLogin from "../components/NavbarLogin";
 import CustomFooter from "../components/Footer";
 import { useState, useEffect } from "react";
@@ -63,10 +63,10 @@ export default function DashboardPage() {
     junior_suite: 0,
   });
 
-  const today = new Date(); // Get today's date in local timezone
-const jakartaToday = new Date(today.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+  const today = new Date();
+  const jakartaToday = new Date(today.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
 
-const formattedJakartaToday = jakartaToday.toISOString().split('T')[0];
+  const formattedJakartaToday = jakartaToday.toISOString().split('T')[0];
 
   const pembayaran = async () => {
     Swal.showLoading();
@@ -226,58 +226,71 @@ const formattedJakartaToday = jakartaToday.toISOString().split('T')[0];
   };
 
   const storeFasilitasTambahan = () => {
-    const dataFasilitas = {
-      id_reservasi: reservasi.id_reservasi,
-      id_fasilitas: selectedFasilitasId,
-      jumlah: jumlahFasilitas,
-    };
-    setReservasi(null);
-    console.log(dataFasilitas);
-
-    const authToken = localStorage.getItem("authToken");
-
-    fetch('http://127.0.0.1:8000/api/transaksiFasilitas', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify(dataFasilitas),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        if (responseData.status === 'success') {
-          setIsAddFasilitasModalOpen(false); // Close the modal
-          fetchData(); // Refresh data (you can also update state)
-          Swal.fire({
-            icon: "success",
-            title: "Created Fasilitas Tambahan Successful",
-            text: "You have Created Fasilitas Tambahan",
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to store this Fasilitas Tambahan?",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Store Fasilitas Tambahan!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const dataFasilitas = {
+          id_reservasi: reservasi.id_reservasi,
+          id_fasilitas: selectedFasilitasId,
+          jumlah: jumlahFasilitas,
+        };
+        setReservasi(null);
+        console.log(dataFasilitas);
+  
+        const authToken = localStorage.getItem("authToken");
+  
+        fetch('http://127.0.0.1:8000/api/transaksiFasilitas', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(dataFasilitas),
+        })
+          .then((response) => response.json())
+          .then((responseData) => {
+            if (responseData.status === 'success') {
+              setIsAddFasilitasModalOpen(false); // Close the modal
+              fetchData(); // Refresh data (you can also update state)
+              Swal.fire({
+                icon: "success",
+                title: "Created Fasilitas Tambahan Successful",
+                text: "You have Created Fasilitas Tambahan",
+              });
+            } else {
+              console.log('Create Fasiltias Tambahan failed');
+  
+              if (responseData.errors) {
+                const errorMessages = Object.values(responseData.errors).join('\n');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Create Fasilitas Tambahan Failed',
+                  text: errorMessages,
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Create Fasilitas Tambahan Failed',
+                  text: 'Please check the create Fasilitas Tambahan details.',
+                });
+              }
+            }
+          })
+          .catch((error) => {
+            Swal.close();
+            console.error('Error:', error);
           });
-        } else {
-          console.log('Create Fasiltias Tambahan failed');
-
-          if (responseData.errors) {
-            const errorMessages = Object.values(responseData.errors).join('\n');
-            Swal.fire({
-              icon: 'error',
-              title: 'Create Fasilitas Tambahan Failed',
-              text: errorMessages,
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Create Fasilitas Tambahan Failed',
-              text: 'Please check the create Fasilitas Tambahan details.',
-            });
-          }
-        }
-      })
-      .catch((error) => {
-        Swal.close();
-        console.error('Error:', error);
-      });
+      }
+    });
   };
+  
 
 
   useEffect(() => {
@@ -291,66 +304,79 @@ const formattedJakartaToday = jakartaToday.toISOString().split('T')[0];
 
 
 
-
   const createReservasi = () => {
-    Swal.showLoading();
-    const authToken = localStorage.getItem("authToken");
-    fetch('http://127.0.0.1:8000/api/reservasi', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify(dataReservasi),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        Swal.close();
-
-        if (data.status === 'success') {
-          Swal.fire({
-            icon: 'success',
-            title: 'Created Reservasi Successful',
-            text: 'You have Created Reservasi',
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to create this reservation?",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Create Reservation!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.showLoading();
+        const authToken = localStorage.getItem("authToken");
+        
+        fetch('http://127.0.0.1:8000/api/reservasi', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${authToken}`,
+          },
+          body: JSON.stringify(dataReservasi),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            Swal.close();
+  
+            if (data.status === 'success') {
+              Swal.fire({
+                icon: 'success',
+                title: 'Created Reservasi Successful',
+                text: 'You have Created Reservasi',
+              });
+              console.log('Create Reservasi successful');
+              fetchData();
+              fetchKamarAvailability();
+              setDataReservasi({
+                tanggal_mulai: "",
+                tanggal_selesai: "",
+                dewasa: "",
+                anak: "",
+                permintaan_khusus: "",
+                superior: 0,
+                double_deluxe: 0,
+                executive_deluxe: 0,
+                junior_suite: 0,
+              });
+            } else {
+              console.log('Create Reservasi failed');
+  
+              if (data.errors) {
+                const errorMessages = Object.values(data.errors).join('\n');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Create Reservasi Failed',
+                  text: errorMessages,
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Create Reservasi Failed',
+                  text: 'Please check the create Reservasi details.',
+                });
+              }
+            }
+          })
+          .catch((error) => {
+            Swal.close();
+            console.error('Error:', error);
           });
-          console.log('Create Reservasi successful');
-          fetchData();
-          fetchKamarAvailability();
-          setDataReservasi({
-            tanggal_mulai: "",
-            tanggal_selesai: "",
-            dewasa: "",
-            anak: "",
-            permintaan_khusus: "",
-            superior: "",
-            double_deluxe: "",
-            executive_deluxe: "",
-            junior_suite: "",
-          });
-        } else {
-          console.log('Create Reservasi failed');
-
-          if (data.errors) {
-            const errorMessages = Object.values(data.errors).join('\n');
-            Swal.fire({
-              icon: 'error',
-              title: 'Create Reservasi Failed',
-              text: errorMessages,
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Create Reservasi Failed',
-              text: 'Please check the create Reservasi details.',
-            });
-          }
-        }
-      })
-      .catch((error) => {
-        Swal.close();
-        console.error('Error:', error);
-      });
+      }
+    });
   };
+  
 
 
   useEffect(() => {
@@ -418,6 +444,7 @@ const formattedJakartaToday = jakartaToday.toISOString().split('T')[0];
                     </Button>
                   </TableCell>
                   <TableCell>
+                    {row.status !== "Lunas" && (
                     <Button
                       color="primary"
                       variant="flat"
@@ -429,16 +456,19 @@ const formattedJakartaToday = jakartaToday.toISOString().split('T')[0];
                     >
                       Add
                     </Button>
+
+                    )}
                   </TableCell>
                   <TableCell>
-                    <Button
-                      color="primary"
-                      variant="flat"
-                      onClick={() => openDetailsModal(row)}
-                      disabled={row.status === "Lunas"} // Open the new details modal
-                    >
-                      Bayar
-                    </Button>
+                    {row.status !== "Lunas" && (
+                      <Button
+                        color="primary"
+                        variant="flat"
+                        onClick={() => openDetailsModal(row)} // Open the new details modal
+                      >
+                        Bayar
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

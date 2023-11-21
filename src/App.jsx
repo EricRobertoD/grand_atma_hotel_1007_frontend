@@ -17,6 +17,7 @@ import CustomerGrupPageAdmin from "./pages/CustomerGrupPageAdmin"
 import TransaksiPageAdmin from "./pages/TransaksiPageAdmin"
 import PembatalanPage from "./pages/PembatalanPage"
 import PembatalanPageAdmin from "./pages/PembatalanPageAdmin"
+import CheckInPageAdmin from "./pages/CheckInPageAdmin"
 
 function App() {
   return <>
@@ -39,6 +40,7 @@ function App() {
         <Route path="/TransaksiPageAdmin" element={<TransaksiPageAdmin/>}/>
         <Route path="/PembatalanPage" element={<PembatalanPage/>}/>
         <Route path="/PembatalanPageAdmin" element={<PembatalanPageAdmin/>}/>
+        <Route path="/CheckInPageAdmin" element={<CheckInPageAdmin/>}/>
         
       </Routes>
     </BrowserRouter>

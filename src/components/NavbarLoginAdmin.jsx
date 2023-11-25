@@ -52,6 +52,9 @@ export default function NavbarLoginAdmin() {
   const checkin = () => {
     navigate('/CheckInPageAdmin')
   }
+  const laporan = () => {
+    navigate('/LaporanPageAdmin')
+  }
 
   return (
     <Navbar className="bg-slate-800">
@@ -60,6 +63,13 @@ export default function NavbarLoginAdmin() {
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         {/* {(id_role == 1 || id_role == 2 )? ( */}
+        {(id_role == 1 )? (
+          <NavbarItem isActive>
+            <Link onClick={laporan} style={{ cursor: "pointer" }}>
+              Laporan
+            </Link>
+          </NavbarItem>
+        ) : null}
         {(id_role == 3 )? (
           <NavbarItem isActive>
             <Link onClick={checkin} style={{ cursor: "pointer" }}>

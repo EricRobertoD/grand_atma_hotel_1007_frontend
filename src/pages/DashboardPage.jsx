@@ -39,12 +39,12 @@ export default function DashboardPage() {
     if (!reservation) return 0;
 
     const transaksiKamarTotal = reservation.transaksi_kamar.reduce(
-      (total, transaction) => total + (transaction.harga_total || 0),
+      (total, transaction) => total + Number(transaction.harga_total || 0),
       0
     );
 
     const fasilitasTambahanTotal = reservation.transaksi_fasilitas_tambahan.reduce(
-      (total, transaction) => total + (transaction.total_harga_fasilitas || 0),
+      (total, transaction) => total + Number(transaction.total_harga_fasilitas || 0),
       0
     );
 
@@ -74,6 +74,7 @@ export default function DashboardPage() {
     formData.append("gambar", selectedFile);
     formData.append("id_reservasi", selectedReservation.id_reservasi);
     formData.append("status", "Lunas");
+    formData.append("total_jaminan", calculateTotalTransaction(selectedReservation));
     const authToken = localStorage.getItem("authToken");
 
     axios({
@@ -243,9 +244,9 @@ export default function DashboardPage() {
         };
         setReservasi(null);
         console.log(dataFasilitas);
-  
+
         const authToken = localStorage.getItem("authToken");
-  
+
         fetch('https://p3l-be-eric.frederikus.com/api/transaksiFasilitas', {
           method: 'POST',
           headers: {
@@ -266,7 +267,7 @@ export default function DashboardPage() {
               });
             } else {
               console.log('Create Fasiltias Tambahan failed');
-  
+
               if (responseData.errors) {
                 const errorMessages = Object.values(responseData.errors).join('\n');
                 Swal.fire({
@@ -290,7 +291,7 @@ export default function DashboardPage() {
       }
     });
   };
-  
+
 
 
   useEffect(() => {
@@ -317,7 +318,7 @@ export default function DashboardPage() {
       if (result.isConfirmed) {
         Swal.showLoading();
         const authToken = localStorage.getItem("authToken");
-        
+
         fetch('https://p3l-be-eric.frederikus.com/api/reservasi', {
           method: 'POST',
           headers: {
@@ -329,7 +330,7 @@ export default function DashboardPage() {
           .then((response) => response.json())
           .then((data) => {
             Swal.close();
-  
+
             if (data.status === 'success') {
               Swal.fire({
                 icon: 'success',
@@ -352,7 +353,7 @@ export default function DashboardPage() {
               });
             } else {
               console.log('Create Reservasi failed');
-  
+
               if (data.errors) {
                 const errorMessages = Object.values(data.errors).join('\n');
                 Swal.fire({
@@ -376,7 +377,7 @@ export default function DashboardPage() {
       }
     });
   };
-  
+
 
 
   useEffect(() => {
@@ -444,7 +445,6 @@ export default function DashboardPage() {
                     </Button>
                   </TableCell>
                   <TableCell>
-                    {row.status !== "Lunas" && (
                     <Button
                       color="primary"
                       variant="flat"
@@ -452,23 +452,23 @@ export default function DashboardPage() {
                         setReservasi(row);
                         setIsAddFasilitasModalOpen(true);
                       }}
-                      disabled={row.status === "Lunas"}
+
+                      disabled={row.status !== "Reservasi"}
+                      style={{ opacity: row.status !== "Reservasi" ? 0.6 : 1 }}
                     >
                       Add
                     </Button>
-
-                    )}
                   </TableCell>
                   <TableCell>
-                    {row.status !== "Lunas" && (
-                      <Button
-                        color="primary"
-                        variant="flat"
-                        onClick={() => openDetailsModal(row)} // Open the new details modal
-                      >
-                        Bayar
-                      </Button>
-                    )}
+                    <Button
+                      color="primary"
+                      variant="flat"
+                      onClick={() => openDetailsModal(row)} // Open the new details modal
+                      disabled={row.status !== "Reservasi"}
+                      style={{ opacity: row.status !== "Reservasi" ? 0.6 : 1 }}
+                    >
+                      Bayar
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

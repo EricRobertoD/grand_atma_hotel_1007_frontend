@@ -18,6 +18,7 @@ import TransaksiPageAdmin from "./pages/TransaksiPageAdmin"
 import PembatalanPage from "./pages/PembatalanPage"
 import PembatalanPageAdmin from "./pages/PembatalanPageAdmin"
 import CheckInPageAdmin from "./pages/CheckInPageAdmin"
+import LaporanPageAdmin from "./pages/LaporanPageAdmin"
 
 function App() {
   return <>
@@ -41,6 +42,7 @@ function App() {
         <Route path="/PembatalanPage" element={<PembatalanPage/>}/>
         <Route path="/PembatalanPageAdmin" element={<PembatalanPageAdmin/>}/>
         <Route path="/CheckInPageAdmin" element={<CheckInPageAdmin/>}/>
+        <Route path="/LaporanPageAdmin" element={<LaporanPageAdmin/>}/>
         
       </Routes>
     </BrowserRouter>

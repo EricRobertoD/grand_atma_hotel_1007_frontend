@@ -61,16 +61,16 @@ export default function TransaksiPageAdmin() {
     if (!reservation) return 0;
 
     const transaksiKamarTotal = reservation.transaksi_kamar.reduce(
-      (total, transaction) => total + (transaction.harga_total || 0),
+      (total, transaction) => total + Number(transaction.harga_total || 0),
       0
     );
 
     const fasilitasTambahanTotal = reservation.transaksi_fasilitas_tambahan.reduce(
-      (total, transaction) => total + (transaction.total_harga_fasilitas || 0),
+      (total, transaction) => total + Number(transaction.total_harga_fasilitas || 0),
       0
     );
 
-    return transaksiKamarTotal + fasilitasTambahanTotal;
+    return 0.5*(transaksiKamarTotal + fasilitasTambahanTotal);
   };
 
   const storeFasilitasTambahan = () => {

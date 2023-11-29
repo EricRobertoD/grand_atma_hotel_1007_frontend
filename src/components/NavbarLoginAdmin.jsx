@@ -63,7 +63,7 @@ export default function NavbarLoginAdmin() {
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         {/* {(id_role == 1 || id_role == 2 )? ( */}
-        {(id_role == 1 )? (
+        {(id_role == 1 || id_role == 2 )? (
           <NavbarItem isActive>
             <Link onClick={laporan} style={{ cursor: "pointer" }}>
               Laporan

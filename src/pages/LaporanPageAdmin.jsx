@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Card, Table, TableHeader, TableColumn, TableBody, TableCell, Modal, ModalContent, ModalHeader, ModalFooter, Button, TableRow, ModalBody } from "@nextui-org/react";
+import { Card, Table, TableHeader, TableColumn, TableBody, TableCell, Modal, ModalContent, ModalHeader, ModalFooter, Button, TableRow, ModalBody} from "@nextui-org/react";
 import NavbarLoginAdmin from "../components/NavbarLoginAdmin";
 import CustomFooter from "../components/Footer";
+import Chart from 'chart.js/auto';
 
 export default function LaporanPageAdmin() {
     const [dataLaporanCustomerBaru, setDataLaporanCustomerBaru] = useState(null);
@@ -12,6 +13,33 @@ export default function LaporanPageAdmin() {
     const [isModalJumlahTamu, setIsModalJumlahTamu] = useState(false);
     const [dataTopCustomer, setDataTopCustomer] = useState(null);
     const [isModalTopCustomer, setIsModalTopCustomer] = useState(false);
+    const [setIsModalJumlahTamuChart, setDataJumlahTamuChart] = useState(false);
+    const [setIsModalPendapatanChart, setDataPendapatanChart] = useState(false);
+    const [isTahun, setIsTahun] = useState("");
+    const [selectedMonth, setSelectedMonth] = useState("");
+
+
+    const handleButtonPendapatanChart = () => {
+        setDataPendapatanChart(true);
+        setTimeout(() => {
+            createChartPendapatan();
+        }, 500);
+    };
+
+    const handleClosePendapatanChart = () => {
+        setDataPendapatanChart(false);
+    };
+
+    const handleButtonJumlahTamuChart = () => {
+        setDataJumlahTamuChart(true);
+        setTimeout(() => {
+            createChartTamu();
+        }, 500);
+    };
+
+    const handleCloseJumlahTamuChart = () => {
+        setDataJumlahTamuChart(false);
+    };
 
     const handleButtonTopCustomer = () => {
         setIsModalTopCustomer(true);
@@ -40,7 +68,7 @@ export default function LaporanPageAdmin() {
     const fetchNewCustomer = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("https://p3l-be-eric.frederikus.com/api/getNewCustomer", {
+            const response = await fetch(`https://p3l-be-eric.frederikus.com/api/getNewCustomer?tahun=${isTahun}`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -62,7 +90,7 @@ export default function LaporanPageAdmin() {
     const fetchPendapatanPerJenisTamuPerBulan = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("https://p3l-be-eric.frederikus.com/api/getPendapatanPerJenisTamuPerBulan", {
+            const response = await fetch(`https://p3l-be-eric.frederikus.com/api/getPendapatanPerJenisTamuPerBulan?tahun=${isTahun}`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -84,7 +112,7 @@ export default function LaporanPageAdmin() {
     const fetchJumlahTamu = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("https://p3l-be-eric.frederikus.com/api/getCustomerCountPerRoomType", {
+            const response = await fetch(`https://p3l-be-eric.frederikus.com/api/getCustomerCountPerRoomType?year=${isTahun}&month=${selectedMonth}`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -106,7 +134,7 @@ export default function LaporanPageAdmin() {
     const fetchTopCustomer = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("https://p3l-be-eric.frederikus.com/api/getTopCustomersWithMostBookings", {
+            const response = await fetch(`https://p3l-be-eric.frederikus.com/api/getTopCustomersWithMostBookings?tahun=${isTahun}`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -125,12 +153,107 @@ export default function LaporanPageAdmin() {
         }
     };
 
+    const createChartPendapatan = () => {
+        const ctx = document.getElementById('chart-pendapatan');
+
+        // Extracting data from the response
+        const months = dataPendapatan.data.dataLaporan.map(item => item.bulan);
+        const pendapatanPersonal = dataPendapatan.data.dataLaporan.map(item => item.pendapatan_personal);
+        const pendapatanGrup = dataPendapatan.data.dataLaporan.map(item => item.pendapatan_grup);
+        const pendapatanPerBulan = dataPendapatan.data.dataLaporan.map(item => item.pendapatan_per_bulan);
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Pendapatan Personal',
+                        data: pendapatanPersonal,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        borderWidth: 1,
+                    },
+                    {
+                        label: 'Pendapatan Grup',
+                        data: pendapatanGrup,
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: 'rgb(255, 159, 64)',
+                        borderWidth: 1,
+                    },
+                    {
+                        label: 'Pendapatan Per Bulan',
+                        data: pendapatanPerBulan,
+                        backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                        borderColor: 'rgb(255, 205, 86)',
+                        borderWidth: 1,
+                    },
+                ],
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1000000, // You can adjust the step size as needed
+                        },
+                    },
+                },
+            },
+        });
+    };
+
+    const createChartTamu = () => {
+        const ctx = document.getElementById('chart-jumlah-tamu');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dataJumlahTamu.data.dataLaporan.map((item) => item.jenis_kamar),
+                datasets: [
+                    {
+                        label: 'Group',
+                        data: dataJumlahTamu.data.dataLaporan.map((item) => item.Group),
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        borderWidth: 1,
+                    },
+                    {
+                        label: 'Personal',
+                        data: dataJumlahTamu.data.dataLaporan.map((item) => item.Personal),
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: 'rgb(255, 159, 64)',
+                        borderWidth: 1,
+                    },
+                    {
+                        label: 'Total',
+                        data: dataJumlahTamu.data.dataLaporan.map((item) => item.Total),
+                        backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                        borderColor: 'rgb(255, 205, 86)',
+                        borderWidth: 1,
+                    },
+                ],
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                        },
+                    },
+                },
+            },
+        });
+    };
+
     useEffect(() => {
-        fetchNewCustomer();
-        fetchPendapatanPerJenisTamuPerBulan();
-        fetchJumlahTamu();
-        fetchTopCustomer();
-    }, []);
+        if (isTahun) {
+            fetchNewCustomer();
+            fetchPendapatanPerJenisTamuPerBulan();
+            fetchJumlahTamu();
+            fetchTopCustomer();
+        }
+    }, [isTahun, selectedMonth]);
 
     const handleButtonClick = () => {
         setIsModalOpen(true);
@@ -140,12 +263,58 @@ export default function LaporanPageAdmin() {
         setIsModalOpen(false);
     };
 
+    const handleYearChange = (event) => {
+        setIsTahun(event.target.value);
+    };
+
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    
+    const handleMonthChange = (event) => {
+        setSelectedMonth(event.target.value);
+    };
+    
+    const years = Array.from({ length: new Date().getFullYear() - 2021 }, (_, index) => 2022 + index);
+
     return (
         <>
             <NavbarLoginAdmin />
 
+
             <Card className="px-10 py-10">
                 <div className="container mx-auto py-10">
+                <div>
+    <label htmlFor="yearSelect">Select Year:</label>
+    <select
+        id="yearSelect"
+        value={isTahun}
+        onChange={(event) => handleYearChange(event)}
+    >
+        <option value="" hidden>Pilih tahun</option>
+        {years.map((year) => (
+            <option key={year} value={year}>
+                {year}
+            </option>
+        ))}
+    </select>
+
+    <label htmlFor="monthSelect">Select Month:</label>
+    <select
+        id="monthSelect"
+        value={selectedMonth}
+        onChange={(event) => handleMonthChange(event)}
+    >
+        <option value="" hidden>Pilih bulan</option>
+        {months.map((month, index) => (
+            <option key={index} value={index + 1}>
+                {month}
+            </option>
+        ))}
+    </select>
+</div>
+
                     <Table>
                         <TableHeader>
                             <TableColumn>Laporan</TableColumn>
@@ -160,7 +329,8 @@ export default function LaporanPageAdmin() {
                                         Laporan
                                     </Button>
                                 </TableCell>
-                                <TableCell></TableCell>
+                                <TableCell>
+                                </TableCell>
                             </TableRow>
                             <TableRow key="2">
                                 <TableCell>Laporan Jenis Customer per Bulan</TableCell>
@@ -169,7 +339,11 @@ export default function LaporanPageAdmin() {
                                         Laporan
                                     </Button>
                                 </TableCell>
-                                <TableCell></TableCell>
+                                <TableCell>
+                                    <Button color="primary" onClick={handleButtonPendapatanChart}>
+                                        Chart
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                             <TableRow key="3">
                                 <TableCell>Laporan Jumlah Tamu per Jenis Kamar</TableCell>
@@ -178,7 +352,11 @@ export default function LaporanPageAdmin() {
                                         Laporan
                                     </Button>
                                 </TableCell>
-                                <TableCell></TableCell>
+                                <TableCell>
+                                    <Button color="primary" onClick={handleButtonJumlahTamuChart}>
+                                        Chart
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                             <TableRow key="4">
                                 <TableCell>Laporan Top 5 Customer</TableCell>
@@ -211,7 +389,7 @@ export default function LaporanPageAdmin() {
                                 <h2>LAPORAN CUSTOMER BARU</h2>
                             </div>
                             <div className="text-start mb-2">
-                                <p>Tahun: {dataLaporanCustomerBaru.data.tahun}</p>
+                                <p>Tahun: {isTahun}</p>
                             </div>
 
                             <table>
@@ -246,7 +424,7 @@ export default function LaporanPageAdmin() {
                                 </tbody>
                             </table>
                             <div className="mt-4 pt-4">
-                                <p>Dicetak pada tanggal <b>{dataLaporanCustomerBaru.data.tanggal_cetak}</b></p>
+                                <p>Dicetak pada tanggal <b>{dataLaporanCustomerBaru.tanggal_cetak}</b></p>
                             </div>
                         </ModalBody>
                     )}
@@ -274,7 +452,7 @@ export default function LaporanPageAdmin() {
                                 <h2>LAPORAN PENDAPATAN</h2>
                             </div>
                             <div className="text-start mb-2">
-                                <p>Tahun: {dataPendapatan.data.tahun}</p>
+                                <p>Tahun: {isTahun}</p>
                             </div>
 
                             <table style={{ borderWidth: 1, borderColor: "black" }}>
@@ -323,6 +501,24 @@ export default function LaporanPageAdmin() {
                 </ModalContent>
             </Modal>
 
+            <Modal isOpen={setIsModalJumlahTamuChart} onOpenChange={handleCloseJumlahTamuChart} size="2xl" style={{ top: "100px" }}>
+                <ModalContent>
+                    <ModalHeader>Laporan Jumlah Tamu Chart</ModalHeader>
+                    <ModalBody>
+                        <canvas id="chart-jumlah-tamu"></canvas>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+
+            <Modal isOpen={setIsModalPendapatanChart} onOpenChange={handleClosePendapatanChart} size="2xl" style={{ top: "100px" }}>
+                <ModalContent>
+                    <ModalHeader>Laporan Pendapatan Chart</ModalHeader>
+                    <ModalBody>
+                        <canvas id="chart-pendapatan"></canvas>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+
             <Modal isOpen={isModalJumlahTamu} onOpenChange={handleCloseJumlahTamu} size="xl" style={{ top: "100px" }}>
                 <ModalContent>
                     <ModalHeader>Laporan Jumlah Tamu</ModalHeader>
@@ -339,7 +535,7 @@ export default function LaporanPageAdmin() {
                                 <h2>LAPORAN TAMU</h2>
                             </div>
                             <div className="text-start mb-2">
-                                <p>Tahun: {dataJumlahTamu.data.tahun}</p>
+                                <p>Tahun: {isTahun}</p>
                             </div>
 
                             <table style={{ borderWidth: 1, borderColor: "black" }}>
@@ -403,7 +599,7 @@ export default function LaporanPageAdmin() {
                                 <h2>LAPORAN TOP 5 CUSTOMER</h2>
                             </div>
                             <div className="text-start mb-2">
-                                <p>Tahun: {new Date().getFullYear()}</p>
+                                <p>Tahun: {isTahun}</p>
                             </div>
 
                             <Table style={{ borderWidth: 1, borderColor: "black" }}>

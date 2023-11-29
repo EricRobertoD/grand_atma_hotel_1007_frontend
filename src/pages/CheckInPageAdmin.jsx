@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Card, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Input, Tabs, Tab, Modal, ModalContent, ModalHeader, ModalBody, Select, SelectItem, ModalFooter } from "@nextui-org/react";
+import { Card, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Input, Tabs, Tab, Modal, ModalContent, ModalHeader, ModalBody, Select, SelectItem, ModalFooter, AccordionItem, Accordion } from "@nextui-org/react";
 import NavbarLoginAdmin from "../components/NavbarLoginAdmin";
 import CustomFooter from "../components/Footer";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 export default function CheckInPageAdmin() {
     const [search, setSearch] = useState("");
@@ -15,102 +16,193 @@ export default function CheckInPageAdmin() {
     const [fasilitasOptions, setFasilitasOptions] = useState([]);
     const [isNewModalOpen, setIsNewModalOpen] = useState(false);  // Add this line
     const [reservasi, setReservasi] = useState(null);  // Add this line
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [isBayar, setIsBayar] = useState(false);
+    const [selectedReservation, setSelectedReservation] = useState(null);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+
+
+    const openDetailsModal = (reservation) => {
+        setSelectedReservation(reservation);
+        setIsDetailsModalOpen(true);
+    };
+
+    const showConfirmationBayar = () => {
+        setIsBayar(true);
+    };
+    const hideConfirmationBayar = () => {
+        setIsBayar(false);
+    };
+
+    const calculateTotalTransaction = (reservation) => {
+        if (!reservation) return 0;
+
+        const transaksiKamarTotal = reservation.transaksi_kamar.reduce(
+            (total, transaction) => total + Number(transaction.harga_total || 0),
+            0
+        );
+
+        const fasilitasTambahanTotal = reservation.transaksi_fasilitas_tambahan.reduce(
+            (total, transaction) => total + Number(transaction.total_harga_fasilitas || 0),
+            0
+        );
+
+        // Conditionally subtract or add the total_deposit based on its sign and value
+        const depositValue = reservation.total_deposit <= 0 ? -Number(reservation.total_deposit) : 0;
+
+        return 0.5 * (transaksiKamarTotal + fasilitasTambahanTotal) + depositValue;
+    };
+
+    const pembayaran = async () => {
+        Swal.showLoading();
+        const formData = new FormData();
+        formData.append("gambar", selectedFile);
+        formData.append("id_reservasi", selectedReservation.id_reservasi);
+        formData.append("status", "LunasTotal");
+        formData.append("total_jaminan", calculateTotalTransaction(selectedReservation));
+        const authToken = localStorage.getItem("authToken");
+
+        axios({
+            method: 'post',
+            url: `https://p3l-be-eric.frederikus.com/api/updateBayar/${selectedReservation.id_reservasi}`,
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Accept: "application/json",
+                Authorization: `Bearer ${authToken}`,
+            },
+            data: formData,
+        })
+            .then((response) => {
+                if (response.data.status === 'success') {
+                    setIsAddFasilitasModalOpen(false);
+                    fetchCheckInData();
+                    fetchNota();
+                    Swal.fire({
+                        icon: "success",
+                        title: "Bayar Successful",
+                        text: "Bayar Successful",
+                    });
+                } else {
+                    console.log('Bayar failed');
+
+                    if (response.data.errors) {
+                        const errorMessages = Object.values(response.data.errors).join('\n');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Bayar Failed',
+                            text: errorMessages,
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Bayar Failed',
+                            text: 'Please check the details.',
+                        });
+                    }
+                }
+            })
+            .catch((error) => {
+                Swal.close();
+                console.error('Error:', error);
+            });
+    };
+
 
     const openNewModal = () => {
         setIsNewModalOpen(true);
     };
 
-    
-  const fetchDataFasilitas = async () => {
-    try {
-      const authToken = localStorage.getItem("authToken");
-      const response = await fetch("https://p3l-be-eric.frederikus.com/api/fasilitasTambahan", {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
+    const fetchDataFasilitas = async () => {
+        try {
+            const authToken = localStorage.getItem("authToken");
+            const response = await fetch("https://p3l-be-eric.frederikus.com/api/fasilitasTambahan", {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
 
-      const result = await response.json();
-      setFasilitasOptions(result.data);
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-}
-
-
-const storeFasilitasTambahan = () => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to store this Fasilitas Tambahan?",
-      icon: "info",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Store Fasilitas Tambahan!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const dataFasilitas = {
-          id_reservasi: reservasi.id_reservasi,
-          id_fasilitas: selectedFasilitasId,
-          jumlah: jumlahFasilitas,
-        };
-        setReservasi(null);
-        console.log(dataFasilitas);
-
-        const authToken = localStorage.getItem("authToken");
-
-        fetch('https://p3l-be-eric.frederikus.com/api/transaksiFasilitasCheckIn', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify(dataFasilitas),
-        })
-          .then((response) => response.json())
-          .then((responseData) => {
-            if (responseData.status === 'success') {
-              setIsAddFasilitasModalOpen(false); // Close the modal
-              fetchCheckInData(); // Refresh data (you can also update state)
-              fetchNota();
-              fetchDataFasilitas();
-              Swal.fire({
-                icon: "success",
-                title: "Created Fasilitas Tambahan Successful",
-                text: "You have Created Fasilitas Tambahan",
-              });
-            } else {
-              console.log('Create Fasiltias Tambahan failed');
-
-              if (responseData.errors) {
-                const errorMessages = Object.values(responseData.errors).join('\n');
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Create Fasilitas Tambahan Failed',
-                  text: errorMessages,
-                });
-              } else {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Create Fasilitas Tambahan Failed',
-                  text: 'Please check the create Fasilitas Tambahan details.',
-                });
-              }
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
             }
-          })
-          .catch((error) => {
-            Swal.close();
-            console.error('Error:', error);
-          });
-      }
-    });
-  };
+
+            const result = await response.json();
+            setFasilitasOptions(result.data);
+        } catch (error) {
+            console.error("Error fetching data: ", error);
+        }
+    }
+
+
+    const storeFasilitasTambahan = () => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to store this Fasilitas Tambahan?",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Store Fasilitas Tambahan!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const dataFasilitas = {
+                    id_reservasi: reservasi.id_reservasi,
+                    id_fasilitas: selectedFasilitasId,
+                    jumlah: jumlahFasilitas,
+                };
+                setReservasi(null);
+                console.log(dataFasilitas);
+
+                const authToken = localStorage.getItem("authToken");
+
+                fetch('https://p3l-be-eric.frederikus.com/api/transaksiFasilitasCheckIn', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                    body: JSON.stringify(dataFasilitas),
+                })
+                    .then((response) => response.json())
+                    .then((responseData) => {
+                        if (responseData.status === 'success') {
+                            setIsAddFasilitasModalOpen(false); // Close the modal
+                            fetchCheckInData(); // Refresh data (you can also update state)
+                            fetchNota();
+                            fetchDataFasilitas();
+                            Swal.fire({
+                                icon: "success",
+                                title: "Created Fasilitas Tambahan Successful",
+                                text: "You have Created Fasilitas Tambahan",
+                            });
+                        } else {
+                            console.log('Create Fasiltias Tambahan failed');
+
+                            if (responseData.errors) {
+                                const errorMessages = Object.values(responseData.errors).join('\n');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Create Fasilitas Tambahan Failed',
+                                    text: errorMessages,
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Create Fasilitas Tambahan Failed',
+                                    text: 'Please check the create Fasilitas Tambahan details.',
+                                });
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        Swal.close();
+                        console.error('Error:', error);
+                    });
+            }
+        });
+    };
 
     const fetchCheckInData = async () => {
         try {
@@ -165,7 +257,7 @@ const storeFasilitasTambahan = () => {
     const handleCheckClick = (id_reservasi, isCheckIn) => {
         checkReservation(id_reservasi, isCheckIn);
     };
-    
+
     const checkReservation = async (id_reservasi, isCheckIn) => {
         try {
             const authToken = localStorage.getItem("authToken");
@@ -173,7 +265,7 @@ const storeFasilitasTambahan = () => {
             const url = isCheckIn
                 ? `https://p3l-be-eric.frederikus.com/api/checkIn/${id_reservasi}`
                 : `https://p3l-be-eric.frederikus.com/api/checkOut/${id_reservasi}`;
-    
+
             const confirmationResult = await Swal.fire({
                 title: `Are you sure?`,
                 text: `This will mark the reservation as ${status.toLowerCase()}!`,
@@ -183,10 +275,10 @@ const storeFasilitasTambahan = () => {
                 cancelButtonColor: "#d33",
                 confirmButtonText: `Yes, ${status}!`,
             });
-    
+
             if (confirmationResult.isConfirmed) {
                 Swal.showLoading();
-    
+
                 try {
                     const response = await fetch(url, {
                         method: "PUT",
@@ -199,17 +291,17 @@ const storeFasilitasTambahan = () => {
                             status,
                         }),
                     });
-    
+
                     if (!response.ok) {
                         throw new Error("Network response was not ok");
                     }
-    
+
                     const result = await response.json();
                     if (result.status === 'success') {
                         if (isCheckIn) {
                             await fetchCheckInData(); // wait for this operation to complete
                         } else {
-                            await fetchCheckInData(); 
+                            await fetchCheckInData();
                             await fetchNota(); // wait for this operation to complete
                         }
                         Swal.fire({
@@ -232,8 +324,8 @@ const storeFasilitasTambahan = () => {
             console.error(`Error ${status.toLowerCase()} reservation: `, error);
         }
     };
-    
-    
+
+
 
     const renderPhotosTableBody = () => {
         return (
@@ -262,8 +354,8 @@ const storeFasilitasTambahan = () => {
                                         color="success"
                                         variant="flat"
                                         onClick={() => handleCheckClick(item.id_reservasi, true)}
-                                        disabled={item.status === "Check In" || item.status === "Check Out"}
-                                        style={{ opacity: item.status === "Check In" || item.status === "Check Out" ? 0.6 : 1 }}
+                                        disabled={item.status !== "Lunas"}
+                                        style={{ opacity: item.status !== "Lunas" ? 0.6 : 1 }}
                                     >
                                         Check In
                                     </Button>
@@ -275,28 +367,39 @@ const storeFasilitasTambahan = () => {
                                         color="warning"
                                         variant="flat"
                                         onClick={() => handleCheckClick(item.id_reservasi, false)}
-                                        disabled={item.status === "Check Out"}
-                                        style={{ opacity: item.status === "Check Out" ? 0.6 : 1 }}
+                                        disabled={item.status !== "Check In"}
+                                        style={{ opacity: item.status !== "Check In" ? 0.6 : 1 }}
                                     >
                                         Check Out
                                     </Button>
                                 )}
                             </TableCell>
-                  <TableCell>
-                    <Button
-                      color="primary"
-                      variant="flat"
-                      onClick={() => {
-                        setReservasi(item);
-                        setIsAddFasilitasModalOpen(true);
-                      }}
+                            <TableCell>
+                                <Button
+                                    color="primary"
+                                    variant="flat"
+                                    onClick={() => {
+                                        setReservasi(item);
+                                        setIsAddFasilitasModalOpen(true);
+                                    }}
 
-                      disabled={item.status == "Check Out"}
-                      style={{ opacity: item.status == "Check Out" ? 0.6 : 1 }}
-                    >
-                      Add
-                    </Button>
-                  </TableCell>
+                                    disabled={item.status !== "Check In"}
+                                    style={{ opacity: item.status !== "Check In" ? 0.6 : 1 }}
+                                >
+                                    Add
+                                </Button>
+                            </TableCell>
+                            <TableCell>
+                                <Button
+                                    color="primary"
+                                    variant="flat"
+                                    onClick={() => openDetailsModal(item)} // Open the new details modal
+                                    disabled={item.status !== "Check Out"}
+                                    style={{ opacity: item.status !== "Check Out" ? 0.6 : 1 }}
+                                >
+                                    Bayar
+                                </Button>
+                            </TableCell>
                         </TableRow>
                     ))}
             </TableBody>
@@ -379,6 +482,7 @@ const storeFasilitasTambahan = () => {
                                     <TableColumn>Check In</TableColumn>
                                     <TableColumn>Check Out</TableColumn>
                                     <TableColumn>Fasilitas Tambahan</TableColumn>
+                                    <TableColumn>Pembayaran</TableColumn>
                                 </TableHeader>
                                 {renderPhotosTableBody()}
                             </Table>
@@ -428,8 +532,8 @@ const storeFasilitasTambahan = () => {
                             <hr className="mb-4" />
                             <div className="text-end">
                                 <p>Tgl. Reservasi: <b>{reservasi?.tanggal_reservasi || "-"}</b></p>
-                                <p>No. Invoice: <b>{reservasi?.nota_pelunasan[0]?.no_nota || "-"}</b></p>
-                                <p>FO: <b>{reservasi?.nota_pelunasan[0]?.pegawai?.nama_pegawai || "-"}</b></p>
+                                <p>No. Invoice: <b>{reservasi?.nota_pelunasan?.no_nota || "-"}</b></p>
+                                <p>FO: <b>{reservasi?.nota_pelunasan?.pegawai?.nama_pegawai || "-"}</b></p>
                             </div>
                             <div className="text-start mt-2">
                                 <p>ID Booking: <b>{reservasi?.tanggal_reservasi || "-"}</b></p>
@@ -454,32 +558,32 @@ const storeFasilitasTambahan = () => {
                             <hr className="mb-3" />
                             <div className="w-full">
                                 <table style={{ width: '100%' }}>
-                                <thead>
-                                    <tr>
-                                        <th className="text-start">Jenis Kamar</th>
-                                        <th className="text-start">Bed</th>
-                                        <th className="text-start">Jumlah</th>
-                                        <th className="text-start">Harga</th>
-                                        <th className="text-start">Sub Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {reservasi?.transaksi_kamar?.map((transaksi_kamar) => (
-                                        <tr key={transaksi_kamar?.id_transaksi_kamar}>
-                                            <td>{transaksi_kamar?.kamar?.jenis_kamar?.jenis_kamar}</td>
-                                            <td>{transaksi_kamar?.kamar?.pilih_bed}</td>
-                                            <td>{transaksi_kamar?.jumlah}</td>
-                                            <td>Rp{transaksi_kamar?.kamar?.jenis_kamar?.harga_default}</td>
-                                            <td>Rp{transaksi_kamar?.harga_total}</td>
+                                    <thead>
+                                        <tr>
+                                            <th className="text-start">Jenis Kamar</th>
+                                            <th className="text-start">Bed</th>
+                                            <th className="text-start">Jumlah</th>
+                                            <th className="text-start">Harga</th>
+                                            <th className="text-start">Sub Total</th>
                                         </tr>
-                                    ))}
-                                    <tr>
-                                        <td colSpan="5" className="text-right">
-                                            <b>Rp.{totalKamarPrice}</b>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {reservasi?.transaksi_kamar?.map((transaksi_kamar) => (
+                                            <tr key={transaksi_kamar?.id_transaksi_kamar}>
+                                                <td>{transaksi_kamar?.kamar?.jenis_kamar?.jenis_kamar}</td>
+                                                <td>{transaksi_kamar?.kamar?.pilih_bed}</td>
+                                                <td>{transaksi_kamar?.jumlah}</td>
+                                                <td>Rp{transaksi_kamar?.kamar?.jenis_kamar?.harga_default}</td>
+                                                <td>Rp{transaksi_kamar?.harga_total}</td>
+                                            </tr>
+                                        ))}
+                                        <tr>
+                                            <td colSpan="5" className="text-right">
+                                                <b>Rp.{totalKamarPrice}</b>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                             <hr className="mt-4 mb-3" />
                             <div className="text-center">
@@ -529,52 +633,189 @@ const storeFasilitasTambahan = () => {
                     </ModalBody>
                 </ModalContent>
             </Modal>
-            
-      <Modal
-        size={"2xl"}
-        isOpen={isAddFasilitasModalOpen}
-        onOpenChange={() => setIsAddFasilitasModalOpen(false)}
-        scrollBehavior={"inside"}
-      >
-        <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">Add Fasilitas Tambahan</ModalHeader>
-          <ModalBody>
-            <div>
-              <Select
-                type="text"
-                label="Fasilitas Tambahan"
-                variant="bordered"
-                value={selectedFasilitasId}
-                onChange={(e) => setSelectedFasilitasId(e.target.value)}
-              >
-                {fasilitasOptions.map((option) => (
-                  <SelectItem key={option.id_fasilitas} value={option.id_fasilitas}>
-                    {option.fasilitas_tambahan}
-                  </SelectItem>
-                ))}
-              </Select>
-            </div>
 
-            <div>
-              <Input
-                type="number"
-                label="Quantity"
-                variant="bordered"
-                value={jumlahFasilitas}
-                onChange={(e) => setJumlahFasilitas(e.target.value)}
-              />
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="danger" variant="light" onPress={() => setIsAddFasilitasModalOpen(false)}>
-              Close
-            </Button>
-            <Button color="primary" onPress={storeFasilitasTambahan}>
-              Save
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+            <Modal
+                size={"2xl"}
+                isOpen={isDetailsModalOpen}
+                onOpenChange={() => setIsDetailsModalOpen(false)}
+                scrollBehavior={"inside"}
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                Reservation Details
+                            </ModalHeader>
+                            <ModalBody>
+                                {selectedReservation && (
+                                    <>
+                                        <div className="col-span-1">
+                                            <Input
+                                                label="Id Booking"
+                                                disabled
+                                                variant="bordered"
+                                                value={selectedReservation.id_booking}
+                                            />
+                                        </div>
+                                        <Accordion>
+                                            <AccordionItem
+                                                key="1"
+                                                aria-label="Accordion 1"
+                                                subtitle="Tekan untuk detail"
+                                                title="Detail Kamar"
+                                            >
+                                                <div>
+                                                    {selectedReservation.transaksi_kamar.map((transaction, index) => (
+                                                        <div className="col-span-1 mb-2" key={index}>
+                                                            <Card className="p-2 max-w-[400px] ml-2 border-2 ">
+                                                                <p>{transaction.kamar?.jenis_kamar?.jenis_kamar || ""}</p>
+                                                                <p className="text-small text-default-500">Tarif Kamar: {transaction.harga_total}</p>
+                                                            </Card>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </AccordionItem>
+                                            <AccordionItem
+                                                key="2"
+                                                aria-label="Accordion 2"
+                                                subtitle="Tekan untuk detail"
+                                                title="Detail Fasilitas Tambahan"
+                                            >
+                                                <div>
+                                                    {selectedReservation.transaksi_fasilitas_tambahan.map((transaction, index) => (
+                                                        <div className="col-span-1 mb-2" key={index}>
+                                                            <Card className="p-2 max-w-[400px] ml-2 border-2 ">
+                                                                <p>{transaction.fasilitas_tambahan.fasilitas_tambahan || ""} - {transaction.jumlah}</p>
+                                                                <p className="text-small text-default-500">Tarif Fasilitas: {transaction.total_harga_fasilitas}</p>
+                                                            </Card>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </AccordionItem>
+                                        </Accordion>
+                                        <div className="col-span-1">
+                                            <Input
+                                                label={selectedReservation.total_deposit < 0 ? "Yang Harus Dibayarkan" : "Sisa Deposit"}
+                                                disabled
+                                                variant="bordered"
+                                                value={Math.abs(selectedReservation.total_deposit)}
+                                            />
+                                        </div>
+                                        {selectedReservation.id_booking.startsWith('G') && (
+                                            <div className="col-span-1">
+                                                <Input
+                                                    label="Total Transaksi"
+                                                    disabled
+                                                    variant="bordered"
+                                                    value={
+                                                        calculateTotalTransaction(selectedReservation)
+                                                    }
+                                                />
+                                            </div>
+                                        )}
+                                        {selectedReservation.id_booking.startsWith('G') && (
+                                            <div className="col-span-1">
+                                                <Input
+                                                    label="Nomor Rekening"
+                                                    disabled
+                                                    variant="bordered"
+                                                    value="8298745698"
+                                                />
+                                            </div>
+                                        )}
+                                            <div className="col-span-1">
+                                                <Card className="p-4" >
+                                                    <input
+                                                        type="file"
+                                                        label="Bukti"
+                                                        onChange={
+                                                            (e) => setSelectedFile(e.target.files[0])
+                                                        }
+                                                    /></Card>
+                                            </div>
+                                    </>
+                                )}
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" onPress={() => onClose()}>
+                                    Close
+                                </Button>
+                                <Button color="primary" onPress={(selectedReservation.total_deposit >= 0 && selectedReservation.id_booking.startsWith('P')) ? showConfirmationBayar : showConfirmationBayar}>
+  {(selectedReservation.total_deposit >= 0 && selectedReservation.id_booking.startsWith('P')) ? 'Refund' : 'Bayar'}
+</Button>
+
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+
+            <Modal size="md" isOpen={isBayar} onOpenChange={hideConfirmationBayar}>
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1">Confirmation</ModalHeader>
+                    <ModalBody>
+                        Apakah anda yakin?
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="danger" variant="light" onPress={() => {
+                            hideConfirmationBayar();
+                        }}>
+                            Cancel
+                        </Button>
+                        <Button color="primary" onPress={() => {
+                            pembayaran();
+                        }}>
+                            Confirm Save
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+
+            <Modal
+                size={"2xl"}
+                isOpen={isAddFasilitasModalOpen}
+                onOpenChange={() => setIsAddFasilitasModalOpen(false)}
+                scrollBehavior={"inside"}
+            >
+                <ModalContent>
+                    <ModalHeader className="flex flex-col gap-1">Add Fasilitas Tambahan</ModalHeader>
+                    <ModalBody>
+                        <div>
+                            <Select
+                                type="text"
+                                label="Fasilitas Tambahan"
+                                variant="bordered"
+                                value={selectedFasilitasId}
+                                onChange={(e) => setSelectedFasilitasId(e.target.value)}
+                            >
+                                {fasilitasOptions.map((option) => (
+                                    <SelectItem key={option.id_fasilitas} value={option.id_fasilitas}>
+                                        {option.fasilitas_tambahan}
+                                    </SelectItem>
+                                ))}
+                            </Select>
+                        </div>
+
+                        <div>
+                            <Input
+                                type="number"
+                                label="Quantity"
+                                variant="bordered"
+                                value={jumlahFasilitas}
+                                onChange={(e) => setJumlahFasilitas(e.target.value)}
+                            />
+                        </div>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="danger" variant="light" onPress={() => setIsAddFasilitasModalOpen(false)}>
+                            Close
+                        </Button>
+                        <Button color="primary" onPress={storeFasilitasTambahan}>
+                            Save
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
             <CustomFooter />
         </>
     );
